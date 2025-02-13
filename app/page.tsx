@@ -1,16 +1,13 @@
-import Hero from "@/components/hero";
-import ConnectSupabaseSteps from "@/components/tutorial/connect-supabase-steps";
-import SignUpUserSteps from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+import Link from "next/link";
 
-export default async function Home() {
+export default function Home() {
   return (
-    <>
-      <Hero />
-      <main className="flex-1 flex flex-col gap-6 px-4">
-        <h2 className="font-medium text-xl mb-4">Next steps</h2>
-        {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
+    <div>
+      <main className="flex flex-col items-center p-10">
+        <h1 className="text-3xl font-bold">🐱 Thinking of adopting a cat?</h1>
+        <p className="mt-2">Estimate your yearly costs in under 3 minutes.</p>
+        <Link href="/estimate" className="mt-5 px-6 py-3 bg-orange-500 text-white rounded-lg">Start Estimating</Link>
       </main>
-    </>
+    </div>
   );
 }

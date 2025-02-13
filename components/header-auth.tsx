@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -56,6 +57,7 @@ export default async function AuthButton() {
           Sign out
         </Button>
       </form>
+      <ThemeSwitcher />
     </div>
   ) : (
     <div className="flex gap-2">
@@ -65,6 +67,7 @@ export default async function AuthButton() {
       <Button asChild size="sm" variant={"default"}>
         <Link href="/sign-up">Sign up</Link>
       </Button>
+      <ThemeSwitcher />
     </div>
   );
 }
