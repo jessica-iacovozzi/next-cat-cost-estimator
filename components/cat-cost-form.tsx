@@ -1,32 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const catCostSchema = z.object({
-  lifeStage: z.enum(["Kitten", "Adult", "Senior"]),
-  sex: z.enum(["Male", "Female"]).optional(),
-  lifestyle: z.enum(["Indoor", "Outdoor"]),
+  lifeStage: z.enum(["Kitten", "Adult", "Senior"], {
+    errorMap: () => ({ message: "Please select a life stage." }),
+  }),
+  sex: z.enum(["Male", "Female"], {
+    errorMap: () => ({ message: "Please select a sex." }),
+  }),
+  lifestyle: z.enum(["Indoor", "Outdoor"], {
+    errorMap: () => ({ message: "Please select a lifestyle." }),
+  }),
   insurance: z.boolean(),
 });
 
 type CatCostFormValues = z.infer<typeof catCostSchema>;
 
 export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostFormValues) => void }) {
-  const [lifeStage, setLifeStage] = useState<"Kitten" | "Adult" | "Senior" | null>(null);
-  const { register, handleSubmit, control, watch } = useForm<CatCostFormValues>({
+  const { register, handleSubmit, control, formState: { errors }, } = useForm<CatCostFormValues>({
     resolver: zodResolver(catCostSchema),
     defaultValues: { insurance: false },
   });
-
-  const selectedLifeStage = watch("lifeStage");
 
   return (
     <Card className="max-w-md mx-auto mt-8 p-6 shadow-lg rounded-xl">
@@ -36,42 +36,48 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Life Stage Selection */}
-          <Label className="block font-medium">Life Stage</Label>
           <Controller
             name="lifeStage"
             control={control}
             render={({ field }) => (
-              <Select {...field} onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                const value = event.target.value as "Kitten" | "Adult" | "Senior";
-                field.onChange(value);
-                setLifeStage(value);
-              }}>
+              <Select {...field}>
+                <SelectItem value="">Select life stage</SelectItem>
                 <SelectItem value="Kitten">Kitten</SelectItem>
                 <SelectItem value="Adult">Adult</SelectItem>
                 <SelectItem value="Senior">Senior</SelectItem>
               </Select>
             )}
           />
+          {errors.lifeStage && <p className="text-red-500 text-sm">{errors.lifeStage.message}</p>}
 
-          {/* Sex Selection (Only for Kittens) */}
-          <Label className="block font-medium">Sex</Label>
-          <Select {...register("sex")}>
-            <SelectItem value="Male">Male</SelectItem>
-            <SelectItem value="Female">Female</SelectItem>
-          </Select>
+          {/* Sex Selection */}
+          <Controller
+            name="sex"
+            control={control}
+            render={({ field }) => (
+              <Select {...field}>
+                <SelectItem value="">Select sex</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+              </Select>
+            )}
+          />
+          {errors.sex && <p className="text-red-500 text-sm">{errors.sex.message}</p>}
 
           {/* Lifestyle Selection */}
-          <Label className="block font-medium">Lifestyle</Label>
           <Controller
             name="lifestyle"
             control={control}
             render={({ field }) => (
               <Select {...field}>
+                <SelectItem value="">Select lifestyle</SelectItem>
                 <SelectItem value="Indoor">Indoor</SelectItem>
                 <SelectItem value="Outdoor">Outdoor</SelectItem>
               </Select>
             )}
           />
+          {errors.lifestyle && <p className="text-red-500 text-sm">{errors.lifestyle.message}</p>}
+
           {/* Insurance Selection */}
           <div className="flex items-center space-x-2">
             <input type="checkbox" {...register("insurance")} className="w-5 h-5" />
