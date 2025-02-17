@@ -20,7 +20,7 @@ const catCostSchema = z.object({
   insurance: z.boolean(),
 });
 
-type CatCostFormValues = z.infer<typeof catCostSchema>;
+export type CatCostFormValues = z.infer<typeof catCostSchema>;
 
 export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostFormValues) => void }) {
   const { register, handleSubmit, control, formState: { errors }, } = useForm<CatCostFormValues>({
