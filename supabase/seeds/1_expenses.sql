@@ -1,5 +1,6 @@
 INSERT INTO expenses(name)
 VALUES
+  ('Sterilization'),
   ('Medical consultation and health check-up (3 visits)'),
   ('Vaccines (excluding health check-up)'),
   ('Fecal exam'),
