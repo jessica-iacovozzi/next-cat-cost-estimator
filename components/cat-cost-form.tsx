@@ -31,7 +31,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
   });
 
   return (
-    <Card className="max-w-md mx-auto mt-8 p-6 shadow-lg rounded-xl">
+    <Card className="flex-none p-5 shadow-lg rounded-xl">
       <CardHeader>
         <CardTitle>Cat Annual Cost Estimator</CardTitle>
       </CardHeader>

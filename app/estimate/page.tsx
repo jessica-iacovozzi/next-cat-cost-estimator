@@ -30,31 +30,53 @@ export default function Estimate() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto flex flex-col gap-8 items-center p-6">
+    <div className="flex gap-20 items-center p-6">
       <CatCostForm onSubmit={handleSubmit} />
 
-      {loading && (
+      {loading ? (
         <Button variant="outline" disabled className="w-full">
           Calculating...
         </Button>
-      )}
-
-      {breakdown.length > 0 && (
-        <Card className="w-full shadow-md rounded-xl">
+      ) : breakdown.length > 0 ? (
+        <Card className="flex-1 w-full shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle>Estimated Annual Cost Breakdown</CardTitle>
+            <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
           </CardHeader>
           <CardContent className="text-secondary">
-            <ul>
+            <table className="w-full text-left table-auto min-w-max">
+              <tbody>
               {breakdown
-                .filter((item) => item.cost !== 0)
-                .map((item) => (
-                  <li key={item.name}>{item.name} - ${item.cost}</li>
+                  .filter((item) => item.cost !== 0)
+                  .map((item) => (
+                  <tr key={item.name}>
+                      <td className="p-3 border-b border-slate-200">
+                      <p className="block text-sm text-slate-800">
+                          {item.name}
+                      </p>
+                      </td>
+                      <td className="p-3 border-b border-slate-200 text-center">
+                      <p className="block text-sm text-slate-800">
+                          {item.cost}$
+                      </p>
+                      </td>
+                  </tr>
                 ))}
-            </ul>
-            <p>Total: ${breakdown.reduce((acc, item) => acc + item.cost, 0)}</p>
+              </tbody>
+              <tfoot>
+              <tr>
+                  <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
+                  Total:
+                  </td>
+                  <td className="p-4 font-semibold text-slate-800 border-t border-slate-300">
+                  {breakdown.reduce((acc, item) => acc + item.cost, 0)}$
+                  </td>
+              </tr>
+              </tfoot>
+            </table>
           </CardContent>
         </Card>
+      ) : (
+        <></>
       )}
     </div>
   );
