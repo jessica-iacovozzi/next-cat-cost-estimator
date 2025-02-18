@@ -8,6 +8,7 @@ import { Select, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InfoTooltip from "@/components/ui/info-tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { InfoIcon } from "lucide-react";
 
 const catCostSchema = z.object({
   lifeStage: z.enum(["Kitten", "Adult", "Senior"], {
@@ -85,7 +86,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
             <input type="checkbox" {...register("insurance")} className="w-5 h-5" />
             <label className="font-medium text-secondary">Add Insurance?</label>
             <InfoTooltip content="The AMVQ believes that pet insurance is well worth the cost!">
-              <InfoCircledIcon className="w-5 h-5 text-secondary" />
+              <InfoIcon className="w-5 h-5 text-secondary" />
             </InfoTooltip>
           </div>
 
