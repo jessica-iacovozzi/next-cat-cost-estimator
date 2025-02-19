@@ -7,3 +7,7 @@ CREATE TABLE annual_costs (
     year INTEGER NOT NULL DEFAULT extract(year FROM now()),
     UNIQUE (life_stage_id, expense_id, lifestyle, year)
 );
+
+CREATE INDEX idx_annual_costs_life_stage ON annual_costs(life_stage_id);
+CREATE INDEX idx_annual_costs_expense ON annual_costs(expense_id);
+CREATE INDEX idx_annual_costs_lifestyle ON annual_costs(lifestyle);

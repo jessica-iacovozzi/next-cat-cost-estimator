@@ -16,6 +16,7 @@ export default async function Dashboard() {
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="w-full">
         <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h2 className="text-xl">My customized estimates</h2>
       </div>
     </div>
   );

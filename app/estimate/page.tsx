@@ -30,7 +30,7 @@ export default function Estimate() {
   };
 
   return (
-    <div className="flex gap-20 items-center p-6">
+    <div className="flex flex-col gap-20 items-center p-6">
       <CatCostForm onSubmit={handleSubmit} />
 
       {loading ? (
