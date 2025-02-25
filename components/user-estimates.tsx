@@ -74,7 +74,7 @@ export default function UserEstimates() {
     if (estimates.length > 0) return (
         <>
         {estimates.map((estimate, index) => (
-            <div key={index}>
+            <div key={index} className="w-1/3">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {
                     if (!open) {
                         setActiveEstimateIndex(null);
@@ -95,20 +95,50 @@ export default function UserEstimates() {
                     <Button onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
                 </CardHeader>
                 <CardContent className="text-secondary">
-                    <table className="w-full text-left table-auto min-w-max">
+                    <table className="w-full text-left table-auto">
                         <tbody>
                         {estimate
-                            .map((item) => (
-                            <tr key={item.name}>
-                                <td className="p-3 border-b border-slate-200">
-                                <p className="block text-sm text-slate-800">
-                                    {item.name}
-                                </p>
+                            .map((item, index) => (
+                            <tr key={index}>
+                                <td className="p-3 border-b border-slate-200 w-5/6">
+                                    <input
+                                        type="text"
+                                        value={item.name}
+                                        onChange={(e) => {
+                                            const user_estimate_id = estimate[0]?.user_estimate_id;
+                                            if (!user_estimate_id) return;
+                                            
+                                            setEstimates(prev => prev.map(estimateArray => {
+                                                if (estimateArray[0]?.user_estimate_id === user_estimate_id) {
+                                                    const newArray = [...estimateArray];
+                                                    newArray[index].name = e.target.value;
+                                                    return newArray;
+                                                }
+                                                return estimateArray;
+                                            }));
+                                        }}
+                                        className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                                    />
                                 </td>
-                                <td className="p-3 border-b border-slate-200 text-center">
-                                <p className="block text-sm text-slate-800">
-                                    {item.cost}$
-                                </p>
+                                <td className="p-3 border-b border-slate-200 w-1/6">
+                                    <input
+                                        type="number"
+                                        value={item.cost}
+                                        onChange={(e) => {
+                                            const user_estimate_id = estimate[0]?.user_estimate_id;
+                                            if (!user_estimate_id) return;
+                                            
+                                            setEstimates(prev => prev.map(estimateArray => {
+                                                if (estimateArray[0]?.user_estimate_id === user_estimate_id) {
+                                                    const newArray = [...estimateArray];
+                                                    newArray[index].cost = Number(e.target.value);
+                                                    return newArray;
+                                                }
+                                                return estimateArray;
+                                            }));
+                                        }}
+                                        className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -118,7 +148,7 @@ export default function UserEstimates() {
                             <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
                             Total:
                             </td>
-                            <td className="p-4 font-semibold text-slate-800 border-t border-slate-300">
+                            <td className="p-4 text-end font-semibold text-slate-800 border-t border-slate-300">
                             {estimate.reduce((acc, item) => acc + item.cost, 0)}$
                             </td>
                         </tr>
