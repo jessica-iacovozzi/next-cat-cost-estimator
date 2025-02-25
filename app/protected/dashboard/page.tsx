@@ -8,10 +8,8 @@ export default async function Dashboard(props: {
   const searchParams = await props.searchParams;
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <h1 className="text-3xl text-center font-bold mb-10">My customized estimate</h1>
-
+    <div className="flex-1 w-full flex">
+      <div className="w-full flex gap-4">
         <CustomEstimate estimateId={searchParams.estimateId as string} />
       </div>
     </div>

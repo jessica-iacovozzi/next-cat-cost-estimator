@@ -153,3 +153,27 @@ export async function createUserExpenses(expenses: CustomExpenseFormValues[], es
   if (insertError) throw new Error(`Failed to create user expenses: ${insertError.message}`);
   if (!data?.[0]) throw new Error("No user expenses were created");
 }
+
+export async function getUserEstimateIds() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+  const { data, error } = await supabase
+    .from("user_estimates")
+    .select('id')
+    .eq('user_id', user.id)
+
+  if (error || !data) throw new Error("No user estimates found");
+  return data;
+}
+
+export async function getUserExpenses(estimateId: number) {
+  const { data, error } = await supabase
+    .from("user_expenses")
+    .select('id, name, cost')
+    .eq('user_estimate_id', estimateId)
+
+  if (error || !data) throw new Error("Estimate not found");
+  return data;
+}

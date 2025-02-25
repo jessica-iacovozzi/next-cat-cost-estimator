@@ -6,12 +6,11 @@ import CatCostForm from "@/components/cat-cost-form";
 import { getAnnualExpenseBreakdown, createUserEstimate, type AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export default function Estimate() {
   const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
-  const [estimateId, setEstimateId] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+
   const router = useRouter();
 
   const handleSubmit = async (data: { 
