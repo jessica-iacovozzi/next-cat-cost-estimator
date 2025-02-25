@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { type AnnualExpenseBreakdown, createUserExpenses } from "@/lib/calculateAnnualCosts";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
@@ -53,6 +53,7 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent aria-describedby="Custom Expense Creation Form">
                 <DialogTitle>Custom Expense</DialogTitle>
+                <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
                 <CustomExpenseForm onSubmit={handleSubmit} />
             </DialogContent>
         </Dialog>

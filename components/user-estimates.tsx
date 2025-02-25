@@ -4,7 +4,7 @@ import { createUserExpenses, getUserExpenses, getUserEstimateIds, deleteEstimate
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CustomExpenseForm from "./custom-expense-form";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 
@@ -82,6 +82,7 @@ export default function UserEstimates() {
                 }}>
                     <DialogContent aria-describedby="Custom Expense Creation Form">
                         <DialogTitle>Custom Expense</DialogTitle>
+                        <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
                         <CustomExpenseForm onSubmit={(formData) => handleSubmit({ 
                                 ...formData, 
                                 user_estimate_id: estimate[0].user_estimate_id 
