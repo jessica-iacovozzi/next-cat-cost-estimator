@@ -48,7 +48,7 @@ export default function Estimate() {
               variant="outline" 
               onClick={async () => {
                 const estimateId = await createUserEstimate();
-                router.push(`/protected/dashboard?estimateId=${estimateId}`);
+                router.push(`/protected/estimates?estimateId=${estimateId}`);
               }}
             >
               Customize

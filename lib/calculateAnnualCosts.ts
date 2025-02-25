@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { CatCostFormValues } from "@/components/cat-cost-form";
 import { CustomExpenseFormValues } from "@/components/custom-expense-form";
+import { Estimate } from "@/components/user-estimates";
 
 const supabase = createClient();
 
@@ -168,12 +169,30 @@ export async function getUserEstimateIds() {
   return data;
 }
 
-export async function getUserExpenses(estimateId: number) {
+export async function getUserExpenses(estimateId: number): Promise<Estimate[]> {
   const { data, error } = await supabase
     .from("user_expenses")
-    .select('id, name, cost')
+    .select('id, user_estimate_id, name, cost')
     .eq('user_estimate_id', estimateId)
 
   if (error || !data) throw new Error("Estimate not found");
   return data;
+}
+
+export async function deleteEstimate(estimateId: number) {
+  const { error } = await supabase
+    .from("user_estimates")
+    .delete()
+    .eq('id', estimateId)
+
+  if (error) throw new Error(`Failed to delete estimate: ${error.message}`);
+}
+
+export async function deleteExpenses(estimateId: number) {
+  const { error } = await supabase
+    .from("user_expenses")
+    .delete()
+    .eq('user_estimate_id', estimateId)
+
+  if (error) throw new Error(`Failed to delete expenses: ${error.message}`);
 }
