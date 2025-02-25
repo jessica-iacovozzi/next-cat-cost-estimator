@@ -57,27 +57,40 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
                 <CustomExpenseForm onSubmit={handleSubmit} />
             </DialogContent>
         </Dialog>
-        <Card className="flex-1 w-full shadow-md rounded-xl">
+        <Card className="flex-1 w-full min-w-fit shadow-md rounded-xl">
           <CardHeader className="flex justify-between items-center">
             <CardTitle className="px-3">My Customized Estimate</CardTitle>
             <Button onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
           </CardHeader>
           <CardContent className="text-secondary">
-            <table className="w-full text-left table-auto min-w-max">
+            <table className="w-full text-left table-auto">
                 <tbody>
                 {breakdown
-                    .filter((item) => item.cost !== 0)
-                    .map((item) => (
-                    <tr key={item.name}>
-                        <td className="p-3 border-b border-slate-200">
-                        <p className="block text-sm text-slate-800">
-                            {item.name}
-                        </p>
+                    .map((item, index) => (
+                    <tr key={index}>
+                        <td className="p-3 border-b border-slate-200 w-5/6">
+                            <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => {
+                                    const newBreakdown = [...breakdown];
+                                    newBreakdown[index].name = e.target.value;
+                                    setBreakdown(newBreakdown);
+                                }}
+                                className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                            />
                         </td>
-                        <td className="p-3 border-b border-slate-200 text-center">
-                        <p className="block text-sm text-slate-800">
-                            {item.cost}$
-                        </p>
+                        <td className="p-3 border-b border-slate-200 w-1/6">
+                            <input
+                                type="number"
+                                value={item.cost}
+                                onChange={(e) => {
+                                    const newBreakdown = [...breakdown];
+                                    newBreakdown[index].cost = Number(e.target.value);
+                                    setBreakdown(newBreakdown);
+                                }}
+                                className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                            />
                         </td>
                     </tr>
                 ))}
@@ -87,7 +100,7 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
                     <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
                     Total:
                     </td>
-                    <td className="p-4 font-semibold text-slate-800 border-t border-slate-300">
+                    <td className="p-4 text-end font-semibold text-slate-800 border-t border-slate-300">
                     {breakdown.reduce((acc, item) => acc + item.cost, 0)}$
                     </td>
                 </tr>

@@ -55,10 +55,9 @@ export default function Estimate() {
             </Button>
           </CardHeader>
           <CardContent className="text-secondary">
-            <table className="w-full text-left table-auto min-w-max">
+            <table className="w-full text-left table-auto">
               <tbody>
               {breakdown
-                  .filter((item) => item.cost !== 0)
                   .map((item) => (
                   <tr key={item.name}>
                       <td className="p-3 border-b border-slate-200">
