@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import CatCostForm from "@/components/cat-cost-form";
-import { getAnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
+import { getAnnualExpenseBreakdown, createUserEstimate, type AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
+import Link from "next/link";
 
 export default function Estimate() {
   const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
+  const [estimateId, setEstimateId] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSubmit = async (data: { 
     lifeStage: "Kitten" | "Adult" | "Senior";
@@ -22,6 +25,7 @@ export default function Estimate() {
     try {
       const breakdown = await getAnnualExpenseBreakdown(data);
       setBreakdown(breakdown);
+      localStorage.setItem('catCostBreakdown', JSON.stringify(breakdown));
     } catch (error) {
       console.error("Error calculating cost:", error);
     } finally {
@@ -39,8 +43,17 @@ export default function Estimate() {
         </Button>
       ) : breakdown.length > 0 ? (
         <Card className="flex-1 w-full shadow-md rounded-xl">
-          <CardHeader>
+          <CardHeader className="flex justify-between items-center">
             <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
+            <Button 
+              variant="outline" 
+              onClick={async () => {
+                const estimateId = await createUserEstimate();
+                router.push(`/protected/dashboard?estimateId=${estimateId}`);
+              }}
+            >
+              Customize
+            </Button>
           </CardHeader>
           <CardContent className="text-secondary">
             <table className="w-full text-left table-auto min-w-max">

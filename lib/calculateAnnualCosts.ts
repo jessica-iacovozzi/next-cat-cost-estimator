@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { CatCostFormValues } from "@/components/cat-cost-form";
+import { CustomExpenseFormValues } from "@/components/custom-expense-form";
 
 const supabase = createClient();
 
@@ -100,9 +101,55 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
       });
     }
 
-    return breakdown;
+    return breakdown.filter(item => item.cost > 0);
   } catch (error) {
     console.error('Error calculating breakdown:', error);
     throw error;
   }
+}
+
+export async function createUserEstimate() {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+    const { data, error } = await supabase
+      .from("user_estimates")
+      .insert({
+        user_id: user.id
+      })
+      .select('id')
+
+    if (error || !data?.[0]) throw new Error("User estimate not created");
+  
+  return data[0].id;
+}
+
+export async function createUserExpenses(expenses: CustomExpenseFormValues[], estimateId: number) {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+  // First delete existing expenses for this estimate
+  const { error: deleteError } = await supabase
+    .from("user_expenses")
+    .delete()
+    .eq('user_estimate_id', estimateId);
+
+  if (deleteError) throw new Error(`Failed to delete existing expenses: ${deleteError.message}`);
+
+  // Then insert the new expenses
+  const { data, error: insertError } = await supabase
+    .from("user_expenses")
+    .insert(
+      expenses.map(expense => ({
+        name: expense.name,
+        cost: expense.cost,
+        user_estimate_id: estimateId
+      }))
+    )
+    .select('id');
+
+  if (insertError) throw new Error(`Failed to create user expenses: ${insertError.message}`);
+  if (!data?.[0]) throw new Error("No user expenses were created");
 }

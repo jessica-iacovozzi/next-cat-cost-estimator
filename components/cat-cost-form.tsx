@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InfoTooltip from "@/components/ui/info-tooltip";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { InfoIcon } from "lucide-react";
 
 const catCostSchema = z.object({
