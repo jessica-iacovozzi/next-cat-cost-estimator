@@ -30,7 +30,7 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
         setIsLoading(false);
       }, []);
 
-    const handleSubmit = async (data: { 
+    const handleCreateExpense = async (data: { 
         name: string;
         cost: number;
         }) => {
@@ -62,7 +62,7 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
             <DialogContent aria-describedby="Custom Expense Creation Form">
                 <DialogTitle>Custom Expense</DialogTitle>
                 <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
-                <CustomExpenseForm onSubmit={handleSubmit} />
+                <CustomExpenseForm onSubmit={handleCreateExpense} />
             </DialogContent>
         </Dialog>
         <Card className="flex-1 w-full min-w-fit shadow-md rounded-xl">

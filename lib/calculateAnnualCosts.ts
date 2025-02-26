@@ -61,7 +61,7 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
       .from('expenses')
       .select('id, name');
 
-    if (expensesError || !expenses) throw new Error('Failed to fetch expenses');
+    if (expensesError || !expenses) throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
 
     const breakdown: AnnualExpenseBreakdown[] = [];
 
@@ -121,9 +121,26 @@ export async function createUserEstimate() {
       })
       .select('id')
 
-    if (error || !data?.[0]) throw new Error("User estimate not created");
+    if (error || !data?.[0]) throw new Error(`User estimate not created: ${error?.message}`);
   
   return data[0].id;
+}
+
+export async function createUserExpense(expense: CustomExpenseFormValues, estimateId: number) {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+  const { data, error } = await supabase
+    .from("user_expenses")
+    .insert({
+        user_estimate_id: estimateId,
+        name: expense.name,
+        cost: expense.cost
+    });
+
+  if (error) throw new Error(`Failed to create user expense: ${error.message}`);
+  return data;
 }
 
 export async function createUserExpenses(expenses: CustomExpenseFormValues[], estimateId: number) {
@@ -131,16 +148,7 @@ export async function createUserExpenses(expenses: CustomExpenseFormValues[], es
 
   if (!user) throw new Error("User not found");
 
-  // First delete existing expenses for this estimate
-  const { error: deleteError } = await supabase
-    .from("user_expenses")
-    .delete()
-    .eq('user_estimate_id', estimateId);
-
-  if (deleteError) throw new Error(`Failed to delete existing expenses: ${deleteError.message}`);
-
-  // Then insert the new expenses
-  const { data, error: insertError } = await supabase
+  const { data, error } = await supabase
     .from("user_expenses")
     .insert(
       expenses.map(expense => ({
@@ -149,10 +157,9 @@ export async function createUserExpenses(expenses: CustomExpenseFormValues[], es
         user_estimate_id: estimateId
       }))
     )
-    .select('id');
 
-  if (insertError) throw new Error(`Failed to create user expenses: ${insertError.message}`);
-  if (!data?.[0]) throw new Error("No user expenses were created");
+  if (error) throw new Error(`Failed to create user expenses: ${error.message}`);
+  return data;
 }
 
 export async function getUserEstimateIds() {
@@ -165,7 +172,7 @@ export async function getUserEstimateIds() {
     .select('id')
     .eq('user_id', user.id)
 
-  if (error || !data) throw new Error("No user estimates found");
+  if (error || !data) throw new Error(`No user estimates found: ${error?.message}`);
   return data;
 }
 
@@ -175,7 +182,7 @@ export async function getUserExpenses(estimateId: number): Promise<Estimate[]> {
     .select('id, user_estimate_id, name, cost')
     .eq('user_estimate_id', estimateId)
 
-  if (error || !data) throw new Error("Estimate not found");
+  if (error || !data) throw new Error(`Failed to get user expenses: ${error.message}`);
   return data;
 }
 
@@ -204,4 +211,18 @@ export async function deleteExpense(expenseId: number) {
     .eq('id', expenseId)
 
   if (error) throw new Error(`Failed to delete expense: ${error.message}`);
+}
+
+export async function updateExpense(expenseId: number, data: { name: string, cost: number }) {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+  const { data: updatedExpense, error } = await supabase
+    .from("user_expenses")
+    .update(data)
+    .eq('id', expenseId)
+    
+  if (error) throw new Error(`Failed to update expense: ${error.message}`);
+  return updatedExpense;
 }

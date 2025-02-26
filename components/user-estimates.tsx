@@ -1,8 +1,8 @@
 "use client";
 
-import { createUserExpenses, getUserExpenses, getUserEstimateIds, deleteEstimate, deleteExpenses, deleteExpense } from "@/lib/calculateAnnualCosts";
+import { createUserExpense, getUserExpenses, getUserEstimateIds, deleteEstimate, deleteExpenses, deleteExpense, updateExpense } from "@/lib/calculateAnnualCosts";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -20,6 +20,7 @@ export default function UserEstimates() {
     const [estimates, setEstimates] = useState<Estimate[][]>([]);
     const [activeEstimateIndex, setActiveEstimateIndex] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [updatingExpenseIds, setUpdatingExpenseIds] = useState<number[]>([]);
 
     const router = useRouter();
 
@@ -44,10 +45,11 @@ export default function UserEstimates() {
         fetchData();
     }, []);
 
-    const handleSubmit = async (data: { name: string; cost: number, user_estimate_id: number }) => {
+    const handleCreateExpense = async (data: { name: string; cost: number, user_estimate_id: number }) => {
         setIsLoading(true);
         
         try {
+            await createUserExpense(data, data.user_estimate_id);
             setActiveEstimateIndex(null);
             const newEstimate: Estimate = {
                 id: Date.now(), // temporary ID
@@ -85,6 +87,31 @@ export default function UserEstimates() {
         }
     };
 
+    // Debounce function to prevent too many API calls
+    const debounce = (func: Function, delay: number) => {
+        let timeoutId: NodeJS.Timeout;
+        return (...args: any[]) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func(...args);
+            }, delay);
+        };
+    };
+
+    const handleExpenseUpdate = useCallback(
+        debounce(async (expenseId: number, data: { name: string, cost: number }) => {
+            try {
+                setUpdatingExpenseIds(prev => [...prev, expenseId]);
+                await updateExpense(expenseId, data);
+            } catch (error) {
+                console.error("Error updating expense:", error);
+            } finally {
+                setUpdatingExpenseIds(prev => prev.filter(id => id !== expenseId));
+            }
+        }, 500),
+        []
+    );
+
     if (isLoading) return <p>Loading...</p>;
 
     if (estimates.length > 0) return (
@@ -99,7 +126,7 @@ export default function UserEstimates() {
                     <DialogContent aria-describedby="Custom Expense Creation Form">
                         <DialogTitle>Custom Expense</DialogTitle>
                         <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
-                        <CustomExpenseForm onSubmit={(formData) => handleSubmit({ 
+                        <CustomExpenseForm onSubmit={(formData) => handleCreateExpense({ 
                                 ...formData, 
                                 user_estimate_id: estimate[0].user_estimate_id 
                             })}  />
@@ -132,6 +159,12 @@ export default function UserEstimates() {
                                                 }
                                                 return estimateArray;
                                             }));
+
+                                            // Update the expense in the database
+                                            handleExpenseUpdate(item.id, { 
+                                                name: e.target.value, 
+                                                cost: item.cost 
+                                            });
                                         }}
                                         className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                                     />
@@ -152,6 +185,12 @@ export default function UserEstimates() {
                                                 }
                                                 return estimateArray;
                                             }));
+
+                                            // Update the expense in the database
+                                            handleExpenseUpdate(item.id, { 
+                                                name: item.name, 
+                                                cost: Number(e.target.value) 
+                                            });
                                         }}
                                         className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                                     />
@@ -161,6 +200,7 @@ export default function UserEstimates() {
                                         onClick={() => handleDeleteExpense(item.id)}
                                         className="text-slate-500 hover:text-red-500 transition-colors"
                                         aria-label="Delete expense"
+                                        disabled={updatingExpenseIds.includes(item.id)}
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -179,25 +219,6 @@ export default function UserEstimates() {
                         </tr>
                         </tfoot>
                     </table>
-                    <div>
-                    <Button
-                        className="w-full mt-4 text-foreground"
-                        variant="outline"
-                        onClick={async () => {
-                        setIsLoading(true);
-                        try {
-                            await createUserExpenses(estimate, estimate[0].user_estimate_id);
-                            router.replace('/protected/estimates', undefined);
-                        } catch (error) {
-                            console.error('Error saving custom estimate:', error);
-                        } finally {
-                            setIsLoading(false);
-                        }
-                        }}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Saving...' : 'Save Custom Estimate'}
-                    </Button>
                     <Button
                         className="w-full mt-4 bg-red-600 hover:bg-red-700 text-foreground" 
                         onClick={async () => {
@@ -224,9 +245,8 @@ export default function UserEstimates() {
                         }}
                         disabled={isLoading}
                     >
-                        {isLoading ? 'Deleting...' : 'Delete'}
+                        {isLoading ? 'Deleting Estimate...' : 'Delete Estimate'}
                     </Button>
-                    </div>
                 </CardContent>
                 </Card>
             </div>
