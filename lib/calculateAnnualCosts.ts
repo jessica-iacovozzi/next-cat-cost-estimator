@@ -196,3 +196,12 @@ export async function deleteExpenses(estimateId: number) {
 
   if (error) throw new Error(`Failed to delete expenses: ${error.message}`);
 }
+
+export async function deleteExpense(expenseId: number) {
+  const { error } = await supabase
+    .from("user_expenses")
+    .delete()
+    .eq('id', expenseId)
+
+  if (error) throw new Error(`Failed to delete expense: ${error.message}`);
+}

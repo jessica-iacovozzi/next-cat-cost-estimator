@@ -1,12 +1,13 @@
 "use client";
 
-import { createUserExpenses, getUserExpenses, getUserEstimateIds, deleteEstimate, deleteExpenses } from "@/lib/calculateAnnualCosts";
+import { createUserExpenses, getUserExpenses, getUserEstimateIds, deleteEstimate, deleteExpenses, deleteExpense } from "@/lib/calculateAnnualCosts";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import { Trash2 } from "lucide-react";
 
 export interface Estimate {
     id: number;
@@ -69,10 +70,25 @@ export default function UserEstimates() {
         }
     };
 
+    const handleDeleteExpense = async (expenseId: number) => {
+        setIsLoading(true);
+        
+        try {
+            await deleteExpense(expenseId);
+            setEstimates((prev) => prev.map((estimateArray) => {
+                return estimateArray.filter((expense) => expense.id !== expenseId);
+            }));
+        } catch (error) {
+            console.error("Error deleting expense:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     if (isLoading) return <p>Loading...</p>;
 
     if (estimates.length > 0) return (
-        <div className="grid grid-cols-2 w-full gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-16 lg:gap-24">
         {estimates.map((estimate, index) => (
             <div key={index} className="flex h-full">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {
@@ -140,6 +156,15 @@ export default function UserEstimates() {
                                         className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                                     />
                                 </td>
+                                <td className="p-3 border-b border-slate-200 w-10 text-center">
+                                    <button 
+                                        onClick={() => handleDeleteExpense(item.id)}
+                                        className="text-slate-500 hover:text-red-500 transition-colors"
+                                        aria-label="Delete expense"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -161,7 +186,7 @@ export default function UserEstimates() {
                         onClick={async () => {
                         setIsLoading(true);
                         try {
-                            await createUserExpenses(estimate, estimate[index].user_estimate_id);
+                            await createUserExpenses(estimate, estimate[0].user_estimate_id);
                             router.replace('/protected/estimates', undefined);
                         } catch (error) {
                             console.error('Error saving custom estimate:', error);
@@ -178,9 +203,19 @@ export default function UserEstimates() {
                         onClick={async () => {
                         setIsLoading(true);
                         try {
-                            await deleteExpenses(estimate[index].user_estimate_id);
-                            await deleteEstimate(estimate[index].user_estimate_id);
-                            setEstimates(estimates.filter((item) => item[index].user_estimate_id !== estimate[index].user_estimate_id));
+                            const user_estimate_id = estimate[0]?.user_estimate_id;
+                            
+                            if (!user_estimate_id) {
+                                console.error('Error: Could not find user_estimate_id');
+                                return;
+                            }
+                            
+                            await deleteExpenses(user_estimate_id);
+                            await deleteEstimate(user_estimate_id);
+                            
+                            setEstimates(estimates.filter((estimateArray) => 
+                                estimateArray[0]?.user_estimate_id !== user_estimate_id
+                            ));
                         } catch (error) {
                             console.error('Error deleting custom estimate:', error);
                         } finally {

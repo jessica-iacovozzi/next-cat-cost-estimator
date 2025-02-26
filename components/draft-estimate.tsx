@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 interface DraftEstimateProps {
     estimateId: string;
@@ -46,10 +47,17 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
         }
     };
 
+    const handleDeleteExpense = (index: number) => {
+        const newBreakdown = [...breakdown];
+        newBreakdown.splice(index, 1);
+        setBreakdown(newBreakdown);
+        localStorage.setItem('catCostBreakdown', JSON.stringify(newBreakdown));
+    };
+
     if (isLoading) return <p>Loading...</p>;
 
     if (estimateId) return (
-        <>
+        <div className="grid grid-cols-1 w-50">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent aria-describedby="Custom Expense Creation Form">
                 <DialogTitle>Custom Expense</DialogTitle>
@@ -92,6 +100,15 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
                                 className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                             />
                         </td>
+                        <td className="p-3 border-b border-slate-200 w-10 text-center">
+                            <button 
+                                onClick={() => handleDeleteExpense(index)}
+                                className="text-slate-500 hover:text-red-500 transition-colors"
+                                aria-label="Delete expense"
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>
@@ -125,6 +142,6 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
             </Button>
           </CardContent>
         </Card>
-      </>
+      </div>
     );
 }
