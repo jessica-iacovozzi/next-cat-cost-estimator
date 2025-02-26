@@ -72,9 +72,9 @@ export default function UserEstimates() {
     if (isLoading) return <p>Loading...</p>;
 
     if (estimates.length > 0) return (
-        <>
+        <div className="grid grid-cols-2 w-full gap-16 lg:gap-24">
         {estimates.map((estimate, index) => (
-            <div key={index} className="w-1/3">
+            <div key={index} className="flex h-full">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {
                     if (!open) {
                         setActiveEstimateIndex(null);
@@ -89,12 +89,12 @@ export default function UserEstimates() {
                             })}  />
                     </DialogContent>
                 </Dialog>
-                <Card className="flex-1 w-full shadow-md rounded-xl">
+                <Card className="flex-1 w-full shadow-md rounded-xl flex flex-col h-full">
                 <CardHeader className="flex justify-between items-center">
                     <CardTitle className="px-3">My Custom Estimate {index + 1}</CardTitle>
                     <Button onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
                 </CardHeader>
-                <CardContent className="text-secondary">
+                <CardContent className="text-secondary flex-1 flex flex-col justify-between">
                     <table className="w-full text-left table-auto">
                         <tbody>
                         {estimate
@@ -154,6 +154,7 @@ export default function UserEstimates() {
                         </tr>
                         </tfoot>
                     </table>
+                    <div>
                     <Button
                         className="w-full mt-4 text-foreground"
                         variant="outline"
@@ -190,11 +191,12 @@ export default function UserEstimates() {
                     >
                         {isLoading ? 'Deleting...' : 'Delete'}
                     </Button>
+                    </div>
                 </CardContent>
                 </Card>
             </div>
         ))}
-        </>
+        </div>
     );
 
     return (
