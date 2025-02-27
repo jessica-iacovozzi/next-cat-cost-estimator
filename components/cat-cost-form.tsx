@@ -90,7 +90,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" variant="secondary" className="w-full">Calculate Cost</Button>
+          <Button type="submit" variant="orange" className="w-full">Calculate Cost</Button>
         </form>
       </CardContent>
     </Card>

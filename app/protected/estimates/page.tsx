@@ -10,10 +10,16 @@ export default async function Estimates(props: {
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap justify-center gap-16">
-        {searchParams.estimateId && <DraftEstimate estimateId={searchParams.estimateId as string} />}
-        {!searchParams.estimateId && <UserEstimates />}
-      </div>
+        {searchParams.estimateId && 
+          <div className="flex justify-center w-full lg:w-1/2 mx-auto">
+            <DraftEstimate estimateId={searchParams.estimateId as string} estimateName={searchParams.estimateName as string} />
+          </div>
+        }
+        {!searchParams.estimateId && 
+        <div className="flex flex-wrap justify-center gap-16">
+          <UserEstimates />
+        </div>
+        }
     </div>
   );
 }

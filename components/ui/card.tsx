@@ -18,6 +18,10 @@ interface CardProps {
   export function CardTitle({ children, className }: CardProps) {
     return <h2 className={`text-lg text-secondary font-bold ${className}`}>{children}</h2>;
   }
+
+  export function CardDescription({ children, className }: CardProps) {
+    return <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>;
+  }
   
   export function CardContent({ children, className }: CardProps) {
     return <div className={`${className}`}>{children}</div>;

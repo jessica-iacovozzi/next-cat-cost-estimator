@@ -6,20 +6,18 @@ import CatCostForm from "@/components/cat-cost-form";
 import { getAnnualExpenseBreakdown, createUserEstimate, type AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CatCostFormValues } from "@/components/cat-cost-form";
 
 export default function Estimate() {
   const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<CatCostFormValues>();
 
   const router = useRouter();
 
-  const handleSubmit = async (data: { 
-    lifeStage: "Kitten" | "Adult" | "Senior";
-    sex: "Male" | "Female";
-    lifestyle: "Indoor" | "Outdoor";
-    insurance: boolean;
-  }) => {
+  const handleSubmit = async (data: CatCostFormValues) => {
     setLoading(true);
+    setFormData(data);
 
     try {
       const breakdown = await getAnnualExpenseBreakdown(data);
@@ -47,8 +45,8 @@ export default function Estimate() {
             <Button 
               variant="outline" 
               onClick={async () => {
-                const estimateId = await createUserEstimate();
-                router.push(`/protected/estimates?estimateId=${estimateId}`);
+                const { id, name } = await createUserEstimate(formData as CatCostFormValues);
+                router.push(`/protected/estimates?estimateId=${id}&estimateName=${name}`);
               }}
             >
               Customize

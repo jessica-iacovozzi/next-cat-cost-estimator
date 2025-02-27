@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { type AnnualExpenseBreakdown, createUserExpenses } from "@/lib/calculateAnnualCosts";
+import { type AnnualExpenseBreakdown, createUserExpenses, deleteEstimate } from "@/lib/calculateAnnualCosts";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
 interface DraftEstimateProps {
     estimateId: string;
+    estimateName: string;
 }
 
-export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
+export default function DraftEstimate({ estimateId, estimateName }: DraftEstimateProps) {
     const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -67,7 +68,10 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
         </Dialog>
         <Card className="flex-1 w-full min-w-fit shadow-md rounded-xl">
           <CardHeader className="flex justify-between items-center">
-            <CardTitle className="px-3">My Customized Estimate</CardTitle>
+            <div>
+                <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
+                <CardDescription className="px-3">{estimateName}</CardDescription>
+            </div>
             <Button onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
           </CardHeader>
           <CardContent className="text-secondary">
@@ -139,6 +143,23 @@ export default function DraftEstimate({ estimateId }: DraftEstimateProps) {
                 disabled={isLoading}
             >
                 {isLoading ? 'Saving...' : 'Save Custom Estimate'}
+            </Button>
+            <Button
+                className="w-full mt-4 bg-red-600 hover:bg-red-700 text-foreground"
+                onClick={async () => {
+                setIsLoading(true);
+                try {
+                    await deleteEstimate(parseInt(estimateId));
+                    router.replace('/protected/estimates', undefined);
+                } catch (error) {
+                    console.error('Error deleting custom estimate:', error);
+                } finally {
+                    setIsLoading(false);
+                }
+                }}
+                disabled={isLoading}
+            >
+                {isLoading ? 'Deleting...' : 'Delete Custom Estimate'}
             </Button>
           </CardContent>
         </Card>

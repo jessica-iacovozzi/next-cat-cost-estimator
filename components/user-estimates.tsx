@@ -1,13 +1,13 @@
 "use client";
 
-import { createUserExpense, getUserExpenses, getUserEstimateIds, deleteEstimate, deleteExpenses, deleteExpense, updateExpense } from "@/lib/calculateAnnualCosts";
-import { useRouter } from "next/navigation";
+import { createUserExpense, getUserExpenses, getUserEstimates, deleteEstimate, deleteExpenses, deleteExpense, updateExpense } from "@/lib/calculateAnnualCosts";
 import { useState, useEffect, useCallback } from "react";
 import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export interface Estimate {
     id: number;
@@ -21,24 +21,26 @@ export default function UserEstimates() {
     const [activeEstimateIndex, setActiveEstimateIndex] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [updatingExpenseIds, setUpdatingExpenseIds] = useState<number[]>([]);
-
-    const router = useRouter();
+    const [estimateNames, setEstimateNames] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const estimate_ids = await getUserEstimateIds();
-            if (!estimate_ids) {
+            const estimates = await getUserEstimates();
+            if (!estimates) {
                 setIsLoading(false);
                 return;
             }
             const allEstimates: Estimate[][] = [];
-            for (const id of estimate_ids) {
-                const user_expenses: Estimate[] = await getUserExpenses(id.id);
-                if (user_expenses) {
+            const names: string[] = [];
+            for (const estimate of estimates) {
+                const user_expenses: Estimate[] = await getUserExpenses(estimate.id);
+                if (user_expenses.length > 0) {
                     allEstimates.push(user_expenses);
+                    names.push(estimate.name || `Custom Estimate ${allEstimates.length}`);
                 }
             }
+            setEstimateNames(names);
             setEstimates(allEstimates);
             setIsLoading(false);
         };
@@ -115,6 +117,13 @@ export default function UserEstimates() {
     if (isLoading) return <p>Loading...</p>;
 
     if (estimates.length > 0) return (
+        <>
+        <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
+        <Link href="/estimate">
+            <Button variant="orange">
+                Create new estimate
+            </Button>
+        </Link>
         <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-16 lg:gap-24">
         {estimates.map((estimate, index) => (
             <div key={index} className="flex h-full">
@@ -134,7 +143,12 @@ export default function UserEstimates() {
                 </Dialog>
                 <Card className="flex-1 w-full shadow-md rounded-xl flex flex-col h-full">
                 <CardHeader className="flex justify-between items-center">
-                    <CardTitle className="px-3">My Custom Estimate {index + 1}</CardTitle>
+                    <div>
+                        <CardTitle className="px-3">{estimateNames[index]}</CardTitle>
+                        <CardDescription className="px-3">
+                            Total: ${estimate.reduce((acc, item) => acc + item.cost, 0).toFixed(2)}
+                        </CardDescription>
+                    </div>
                     <Button onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
                 </CardHeader>
                 <CardContent className="text-secondary flex-1 flex flex-col justify-between">
@@ -252,6 +266,7 @@ export default function UserEstimates() {
             </div>
         ))}
         </div>
+        </>
     );
 
     return (
