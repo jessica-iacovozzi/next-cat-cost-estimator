@@ -82,7 +82,7 @@ export default function Estimate() {
       <CatCostForm onSubmit={handleSubmit} />
 
       {loading ? (
-        <Button variant="outline" disabled className="w-full">
+        <Button variant="ghost" disabled className="w-full">
           Calculating...
         </Button>
       ) : breakdown.length > 0 ? (

@@ -16,6 +16,7 @@ type ToastType = {
   description: string
   variant?: 'default' | 'destructive' | 'success'
   duration?: number
+  position?: 'default' | 'center'
 }
 
 type ToastContextType = {
@@ -51,8 +52,13 @@ export function ToastContextProvider({ children }: { children: React.ReactNode }
     <ToastContext.Provider value={{ toasts, addToast, dismissToast }}>
       <ToastProvider>
         {children}
-        {toasts.map(({ id, title, description, variant, duration }) => (
-          <Toast key={id} variant={variant} duration={duration}>
+        {toasts.map(({ id, title, description, variant, duration, position }) => (
+          <Toast 
+            key={id} 
+            variant={variant} 
+            duration={duration}
+            className={position === 'center' ? 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] max-w-md' : undefined}
+          >
             {title && <ToastTitle>{title}</ToastTitle>}
             <ToastDescription>{description}</ToastDescription>
             <ToastClose onClick={() => dismissToast(id)} />

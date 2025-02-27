@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
+import { Spinner } from "./ui/spinner";
 import Link from "next/link";
 
 export interface UserEstimate {
@@ -26,7 +27,7 @@ export interface Estimate {
 export default function UserEstimates() {
     const [estimates, setEstimates] = useState<Estimate[][]>([]);
     const [activeEstimateIndex, setActiveEstimateIndex] = useState<number | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [updatingExpenseIds, setUpdatingExpenseIds] = useState<number[]>([]);
     const [estimateNames, setEstimateNames] = useState<string[]>([]);
     const [estimateDates, setEstimateDates] = useState<string[]>([]);
@@ -41,9 +42,7 @@ export default function UserEstimates() {
         minute: "numeric",
     }
 
-    // Function to fetch all data
     const fetchData = async () => {
-        setIsLoading(true);
         try {
             const estimates = await getUserEstimates() as UserEstimate[];
             if (!estimates) {
@@ -131,13 +130,17 @@ export default function UserEstimates() {
         [setRefreshTrigger]
     );
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return (
+        <div className="flex items-center justify-center min-h-[200px]">
+            <Spinner size={32} text="Loading your estimates..." />
+        </div>
+    );
 
     if (estimates.length > 0) return (
         <>
         <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
         <Link href="/estimate">
-            <Button variant="orange">
+            <Button variant="orange" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
                 Create new estimate
             </Button>
         </Link>

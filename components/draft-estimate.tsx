@@ -9,6 +9,7 @@ import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { useToast } from "./ui/toast-context";
+import { Spinner } from "./ui/spinner";
 
 interface DraftEstimateProps {
     estimateId: string;
@@ -57,7 +58,11 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
         localStorage.setItem('catCostBreakdown', JSON.stringify(newBreakdown));
     };
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return (
+        <div className="flex items-center justify-center min-h-[200px]">
+            <Spinner size={32} text="Loading your draft estimate..." />
+        </div>
+    );
 
     if (estimateId) return (
         <div className="grid grid-cols-1 w-full">
@@ -137,15 +142,16 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                     await createUserExpenses(breakdown, parseInt(estimateId));
                     addToast({
                       title: "Success",
-                      description: "Draft estimate saved successfully! Redirecting to saved estimates...",
+                      description: "Estimate saved successfully! Redirecting to saved estimates...",
                       variant: "success",
-                      duration: 4000
+                      duration: 3000,
+                      position: "center"
                     });
                     
                     // Redirect after a short delay
                     setTimeout(() => {
                       router.push('/protected/estimates');
-                    }, 2000);
+                    }, 2500);
                 } catch (error) {
                     console.error('Error saving custom estimate:', error);
                     addToast({
@@ -171,15 +177,16 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                     await deleteEstimate(parseInt(estimateId));
                     addToast({
                       title: "Success",
-                      description: "Draft estimate deleted successfully! Redirecting to saved estimates...",
+                      description: "Estimate deleted successfully! Redirecting to saved estimates...",
                       variant: "success",
-                      duration: 4000
+                      duration: 3000,
+                      position: "center"
                     });
                     
                     // Redirect after a short delay
                     setTimeout(() => {
                       router.push('/protected/estimates');
-                    }, 2000);
+                    }, 2500);
                 } catch (error) {
                     console.error('Error deleting custom estimate:', error);
                     addToast({
