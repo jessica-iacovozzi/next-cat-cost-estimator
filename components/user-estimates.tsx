@@ -9,6 +9,13 @@ import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
 
+export interface UserEstimate {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface Estimate {
     id: number;
     user_estimate_id: number;
@@ -22,30 +29,62 @@ export default function UserEstimates() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [updatingExpenseIds, setUpdatingExpenseIds] = useState<number[]>([]);
     const [estimateNames, setEstimateNames] = useState<string[]>([]);
+    const [estimateDates, setEstimateDates] = useState<string[]>([]);
+    const [estimateUpdateDates, setEstimateUpdateDates] = useState<string[]>([]);
+    const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            const estimates = await getUserEstimates();
+    const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+    }
+
+    // Function to fetch all data
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const estimates = await getUserEstimates() as UserEstimate[];
             if (!estimates) {
                 setIsLoading(false);
                 return;
             }
             const allEstimates: Estimate[][] = [];
             const names: string[] = [];
+            const dates: string[] = [];
+            const updateDates: string[] = [];
             for (const estimate of estimates) {
                 const user_expenses: Estimate[] = await getUserExpenses(estimate.id);
                 if (user_expenses.length > 0) {
                     allEstimates.push(user_expenses);
                     names.push(estimate.name || `Custom Estimate ${allEstimates.length}`);
+                    const formattedDate = estimate.created_at 
+                        ? new Date(estimate.created_at).toLocaleDateString(undefined, options) 
+                        : 'No date available';
+                    dates.push(formattedDate);
+                    
+                    const formattedUpdateDate = estimate.updated_at 
+                        ? new Date(estimate.updated_at).toLocaleDateString(undefined, options) 
+                        : 'No update date available';
+                    updateDates.push(formattedUpdateDate);
                 }
             }
             setEstimateNames(names);
+            setEstimateDates(dates);
+            setEstimateUpdateDates(updateDates);
             setEstimates(allEstimates);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
             setIsLoading(false);
-        };
+        }
+    };
+
+    // Fetch data on mount and when refreshTrigger changes
+    useEffect(() => {
         fetchData();
-    }, []);
+    }, [refreshTrigger]);
 
     const handleCreateExpense = async (data: { name: string; cost: number, user_estimate_id: number }) => {
         setIsLoading(true);
@@ -53,20 +92,8 @@ export default function UserEstimates() {
         try {
             await createUserExpense(data, data.user_estimate_id);
             setActiveEstimateIndex(null);
-            const newEstimate: Estimate = {
-                id: Date.now(), // temporary ID
-                user_estimate_id: data.user_estimate_id,
-                name: data.name,
-                cost: data.cost
-            };
-            setEstimates((prev) => {
-                return prev.map((estimateArray) => {
-                    if (estimateArray[0]?.user_estimate_id === data.user_estimate_id) {
-                        return [...estimateArray, newEstimate];
-                    }
-                    return estimateArray;
-                });
-            });
+            // Refresh data to get updated timestamps
+            setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             console.error("Error submitting expense:", error);
         } finally {
@@ -79,9 +106,8 @@ export default function UserEstimates() {
         
         try {
             await deleteExpense(expenseId);
-            setEstimates((prev) => prev.map((estimateArray) => {
-                return estimateArray.filter((expense) => expense.id !== expenseId);
-            }));
+            // Refresh data to get updated timestamps
+            setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             console.error("Error deleting expense:", error);
         } finally {
@@ -89,29 +115,20 @@ export default function UserEstimates() {
         }
     };
 
-    // Debounce function to prevent too many API calls
-    const debounce = (func: Function, delay: number) => {
-        let timeoutId: NodeJS.Timeout;
-        return (...args: any[]) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                func(...args);
-            }, delay);
-        };
-    };
-
     const handleExpenseUpdate = useCallback(
-        debounce(async (expenseId: number, data: { name: string, cost: number }) => {
+        async (expenseId: number, data: { name: string, cost: number }) => {
             try {
                 setUpdatingExpenseIds(prev => [...prev, expenseId]);
                 await updateExpense(expenseId, data);
+                // Refresh data to get updated timestamps
+                setRefreshTrigger(prev => prev + 1);
             } catch (error) {
                 console.error("Error updating expense:", error);
             } finally {
                 setUpdatingExpenseIds(prev => prev.filter(id => id !== expenseId));
             }
-        }, 500),
-        []
+        },
+        [setRefreshTrigger]
     );
 
     if (isLoading) return <p>Loading...</p>;
@@ -146,7 +163,9 @@ export default function UserEstimates() {
                     <div>
                         <CardTitle className="px-3">{estimateNames[index]}</CardTitle>
                         <CardDescription className="px-3">
-                            Total: ${estimate.reduce((acc, item) => acc + item.cost, 0).toFixed(2)}
+                            Created {estimateDates[index]}
+                            <br />
+                            Updated {estimateUpdateDates[index]}
                         </CardDescription>
                     </div>
                     <Button onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
@@ -173,10 +192,11 @@ export default function UserEstimates() {
                                                 }
                                                 return estimateArray;
                                             }));
-
-                                            // Update the expense in the database
+                                        }}
+                                        onBlur={() => {
+                                            // Update the expense in the database when input loses focus
                                             handleExpenseUpdate(item.id, { 
-                                                name: e.target.value, 
+                                                name: item.name, 
                                                 cost: item.cost 
                                             });
                                         }}
@@ -199,11 +219,12 @@ export default function UserEstimates() {
                                                 }
                                                 return estimateArray;
                                             }));
-
-                                            // Update the expense in the database
+                                        }}
+                                        onBlur={() => {
+                                            // Update the expense in the database when input loses focus
                                             handleExpenseUpdate(item.id, { 
                                                 name: item.name, 
-                                                cost: Number(e.target.value) 
+                                                cost: Number(item.cost) 
                                             });
                                         }}
                                         className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
@@ -236,26 +257,25 @@ export default function UserEstimates() {
                     <Button
                         className="w-full mt-4 bg-red-600 hover:bg-red-700 text-foreground" 
                         onClick={async () => {
-                        setIsLoading(true);
-                        try {
-                            const user_estimate_id = estimate[0]?.user_estimate_id;
-                            
-                            if (!user_estimate_id) {
-                                console.error('Error: Could not find user_estimate_id');
-                                return;
+                            setIsLoading(true);
+                            try {
+                                const user_estimate_id = estimate[0]?.user_estimate_id;
+                                
+                                if (!user_estimate_id) {
+                                    console.error('Error: Could not find user_estimate_id');
+                                    return;
+                                }
+                                
+                                await deleteExpenses(user_estimate_id);
+                                await deleteEstimate(user_estimate_id);
+                                
+                                // Refresh data to get updated timestamps
+                                setRefreshTrigger(prev => prev + 1);
+                            } catch (error) {
+                                console.error('Error deleting custom estimate:', error);
+                            } finally {
+                                setIsLoading(false);
                             }
-                            
-                            await deleteExpenses(user_estimate_id);
-                            await deleteEstimate(user_estimate_id);
-                            
-                            setEstimates(estimates.filter((estimateArray) => 
-                                estimateArray[0]?.user_estimate_id !== user_estimate_id
-                            ));
-                        } catch (error) {
-                            console.error('Error deleting custom estimate:', error);
-                        } finally {
-                            setIsLoading(false);
-                        }
                         }}
                         disabled={isLoading}
                     >

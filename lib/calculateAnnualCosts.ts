@@ -146,6 +146,15 @@ export async function createUserExpense(expense: CustomExpenseFormValues, estima
     });
 
   if (error) throw new Error(`Failed to create user expense: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', estimateId);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
+  
   return data;
 }
 
@@ -165,6 +174,15 @@ export async function createUserExpenses(expenses: CustomExpenseFormValues[], es
     )
 
   if (error) throw new Error(`Failed to create user expenses: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', estimateId);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
+  
   return data;
 }
 
@@ -175,8 +193,9 @@ export async function getUserEstimates() {
 
   const { data, error } = await supabase
     .from("user_estimates")
-    .select('id, name')
+    .select('id, name, created_at, updated_at')
     .eq('user_id', user.id)
+    .order('updated_at', { ascending: false });
 
   if (error || !data) throw new Error(`No user estimates found: ${error?.message}`);
   return data;
@@ -208,15 +227,41 @@ export async function deleteExpenses(estimateId: number) {
     .eq('user_estimate_id', estimateId)
 
   if (error) throw new Error(`Failed to delete expenses: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', estimateId);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
 }
 
 export async function deleteExpense(expenseId: number) {
+  // First, get the expense to find its user_estimate_id
+  const { data: expense, error: fetchError } = await supabase
+    .from("user_expenses")
+    .select("user_estimate_id")
+    .eq('id', expenseId)
+    .single();
+
+  if (fetchError) throw new Error(`Failed to fetch expense: ${fetchError.message}`);
+  
+  // Delete the expense
   const { error } = await supabase
     .from("user_expenses")
     .delete()
     .eq('id', expenseId)
 
   if (error) throw new Error(`Failed to delete expense: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', expense.user_estimate_id);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
 }
 
 export async function updateExpense(expenseId: number, data: { name: string, cost: number }) {
@@ -224,11 +269,30 @@ export async function updateExpense(expenseId: number, data: { name: string, cos
 
   if (!user) throw new Error("User not found");
 
+  // First, get the expense to find its user_estimate_id
+  const { data: expense, error: fetchError } = await supabase
+    .from("user_expenses")
+    .select("user_estimate_id")
+    .eq('id', expenseId)
+    .single();
+
+  if (fetchError) throw new Error(`Failed to fetch expense: ${fetchError.message}`);
+  
+  // Update the expense
   const { data: updatedExpense, error } = await supabase
     .from("user_expenses")
     .update(data)
-    .eq('id', expenseId)
+    .eq('id', expenseId);
     
   if (error) throw new Error(`Failed to update expense: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', expense.user_estimate_id);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
+  
   return updatedExpense;
 }
