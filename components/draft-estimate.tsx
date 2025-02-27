@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import { useToast } from "./ui/toast-context";
 
 interface DraftEstimateProps {
     estimateId: string;
@@ -18,8 +19,9 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
     const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    
     const router = useRouter();
+    const { addToast } = useToast();
     
     useEffect(() => {
         setIsLoading(true);
@@ -58,7 +60,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
     if (isLoading) return <p>Loading...</p>;
 
     if (estimateId) return (
-        <div className="grid grid-cols-1 w-50">
+        <div className="grid grid-cols-1 w-full">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent aria-describedby="Custom Expense Creation Form">
                 <DialogTitle>Custom Expense</DialogTitle>
@@ -133,33 +135,66 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                 setIsLoading(true);
                 try {
                     await createUserExpenses(breakdown, parseInt(estimateId));
-                    router.replace('/protected/estimates', undefined);
+                    addToast({
+                      title: "Success",
+                      description: "Draft estimate saved successfully! Redirecting to saved estimates...",
+                      variant: "success",
+                      duration: 4000
+                    });
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                      router.push('/protected/estimates');
+                    }, 2000);
                 } catch (error) {
                     console.error('Error saving custom estimate:', error);
+                    addToast({
+                      title: "Error",
+                      description: "Failed to save draft estimate.",
+                      variant: "destructive",
+                      duration: 3000
+                    });
                 } finally {
                     setIsLoading(false);
                 }
                 }}
                 disabled={isLoading}
             >
-                {isLoading ? 'Saving...' : 'Save Custom Estimate'}
+                {isLoading ? 'Saving...' : 'Save Draft Estimate'}
             </Button>
+            
             <Button
                 className="w-full mt-4 bg-red-600 hover:bg-red-700 text-foreground"
                 onClick={async () => {
                 setIsLoading(true);
                 try {
                     await deleteEstimate(parseInt(estimateId));
-                    router.replace('/protected/estimates', undefined);
+                    addToast({
+                      title: "Success",
+                      description: "Draft estimate deleted successfully! Redirecting to saved estimates...",
+                      variant: "success",
+                      duration: 4000
+                    });
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                      router.push('/protected/estimates');
+                    }, 2000);
                 } catch (error) {
                     console.error('Error deleting custom estimate:', error);
+                    addToast({
+                      title: "Error",
+                      description: "Failed to delete draft estimate.",
+                      variant: "destructive",
+                      duration: 3000
+                    });
                 } finally {
                     setIsLoading(false);
                 }
                 }}
                 disabled={isLoading}
             >
-                {isLoading ? 'Deleting...' : 'Delete Custom Estimate'}
+                {isLoading ? 'Deleting...' : 'Delete Draft Estimate'}
             </Button>
           </CardContent>
         </Card>

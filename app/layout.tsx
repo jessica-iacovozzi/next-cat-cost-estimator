@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import Footer from "@/components/footer";
+import { ToastContextProvider } from "@/components/ui/toast-context";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,29 +30,31 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col gap-20 items-center justify-between">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Cat Cost Estimator</Link>
+          <ToastContextProvider>
+            <main className="min-h-screen flex flex-col items-center">
+              <div className="flex-1 w-full flex flex-col gap-20 items-center justify-between">
+                <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+                  <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+                    <div className="flex gap-5 items-center font-semibold">
+                      <Link href={"/"}>Cat Cost Estimator</Link>
+                    </div>
+                    {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                   </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                </nav>
+                <div className="flex flex-col md:flex-row px-8 md:px-16 lg:px-32 xl:px-64 w-full justify-center">
+                  {children}
                 </div>
-              </nav>
-              <div className="flex flex-col md:flex-row px-8 md:px-16 lg:px-32 xl:px-64 w-full justify-center">
-                {children}
+                <Footer />
               </div>
-              <Footer />
-            </div>
-          </main>
+            </main>
+          </ToastContextProvider>
         </ThemeProvider>
       </body>
     </html>
