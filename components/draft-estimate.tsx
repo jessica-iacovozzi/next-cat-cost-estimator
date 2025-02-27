@@ -136,6 +136,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
             </table>
             <Button
                 className="w-full mt-4" 
+                variant="orange"
                 onClick={async () => {
                 setIsLoading(true);
                 try {
