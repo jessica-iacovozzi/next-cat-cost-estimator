@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CatCostForm from "@/components/cat-cost-form";
-import { getAnnualExpenseBreakdown, createUserEstimate, type AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getAnnualExpenseBreakdown, createUserEstimate, generateEstimateName, type AnnualExpenseBreakdown } from "@/lib/calculateAnnualCosts";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CatCostFormValues } from "@/components/cat-cost-form";
 import { useUser } from "@/hooks/useUser";
@@ -14,6 +14,8 @@ export default function Estimate() {
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<CatCostFormValues | null>(null);
   const [estimateCreated, setEstimateCreated] = useState(false); 
+  const [estimateName, setEstimateName] = useState<string>("");
+
   const { user } = useUser();
 
   const router = useRouter();
@@ -26,7 +28,9 @@ export default function Estimate() {
         
         const createEstimate = async () => {
           setEstimateCreated(true); 
-          const { id, name } = await createUserEstimate(parsedData);
+          const name = generateEstimateName(parsedData);
+          setEstimateName(name);
+          const { id } = await createUserEstimate(parsedData, name);
           router.push(`/protected/estimates?estimateId=${id}&estimateName=${name}`);
           localStorage.removeItem('pendingCatCostFormData');
         };
@@ -59,6 +63,9 @@ export default function Estimate() {
     setFormData(data);
     setEstimateCreated(false);
 
+    const name = generateEstimateName(data);
+    setEstimateName(name);
+
     try {
       const breakdown = await getAnnualExpenseBreakdown(data);
       setBreakdown(breakdown);
@@ -81,17 +88,19 @@ export default function Estimate() {
       ) : breakdown.length > 0 ? (
         <Card className="flex-1 w-full shadow-md rounded-xl">
           <CardHeader className="flex justify-between items-center">
-            <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
+            <div>
+              <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
+              <CardDescription className="px-3">{estimateName}</CardDescription>
+            </div>
             {user ? (
               <Button 
                 variant="outline" 
                 onClick={async () => {
                   if (!estimateCreated) {
                     setEstimateCreated(true);
-                    const { id, name } = await createUserEstimate(formData as CatCostFormValues);
-                    router.push(`/protected/estimates?estimateId=${id}&estimateName=${name}`);
+                    const { id } = await createUserEstimate(formData as CatCostFormValues, estimateName);
+                    router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
                   } else {
-                    // If estimate was already created, just redirect to estimates page
                     router.push('/protected/estimates');
                   }
                 }}

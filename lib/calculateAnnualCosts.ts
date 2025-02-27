@@ -109,12 +109,14 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
   }
 }
 
-export async function createUserEstimate(formData: CatCostFormValues) {
+export function generateEstimateName(formData: CatCostFormValues): string {
+  return `${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
+}
+
+export async function createUserEstimate(formData: CatCostFormValues, estimateName: string) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) throw new Error("User not found");
-
-  const estimateName = `${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
 
   const { data, error } = await supabase
     .from("user_estimates")
@@ -122,12 +124,12 @@ export async function createUserEstimate(formData: CatCostFormValues) {
       user_id: user.id, 
       name: estimateName
     })
-    .select('id, name')
+    .select('id')
     .single();
 
   if (error || !data?.id) throw new Error(`User estimate not created: ${error?.message}`);
   
-  return data;
+  return { id: data.id };
 }
 
 export async function createUserExpense(expense: CustomExpenseFormValues, estimateId: number) {
