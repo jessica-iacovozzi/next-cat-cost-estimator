@@ -27,6 +27,7 @@ export default async function AuthButton() {
           </div>
           <div className="flex gap-2">
             <Button
+              aria-label="Sign in"
               asChild
               size="sm"
               variant={"outline"}
@@ -36,6 +37,7 @@ export default async function AuthButton() {
               <Link href="/sign-in">Sign in</Link>
             </Button>
             <Button
+              aria-label="Sign up"
               asChild
               size="sm"
               variant={"default"}
@@ -56,7 +58,7 @@ export default async function AuthButton() {
         <Link href="/protected/estimates">Estimates</Link>
       </Button>
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+        <Button aria-label="Sign out" type="submit" variant={"outline"}>
           Sign out
         </Button>
       </form>
@@ -64,10 +66,10 @@ export default async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
+      <Button aria-label="Sign in" asChild size="sm" variant={"outline"}>
         <Link href="/sign-in">Sign in</Link>
       </Button>
-      <Button asChild size="sm" variant={"default"}>
+      <Button aria-label="Sign up" asChild size="sm" variant={"default"}>
         <Link href="/sign-up">Sign up</Link>
       </Button>
       <ThemeSwitcher />

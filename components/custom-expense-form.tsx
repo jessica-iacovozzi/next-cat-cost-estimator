@@ -29,7 +29,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           <Input type="number" {...register("cost", { valueAsNumber: true })} placeholder="Cost" className="w-full p-2 border rounded-lg" />
           {errors.cost && <p className="text-red-500 text-sm">{errors.cost.message}</p>}
 
-          <Button type="submit" variant="secondary" className="w-full rounded-lg">Add Expense</Button>
+          <Button aria-label="Add Expense" type="submit" variant="secondary" className="w-full rounded-lg">Add Expense</Button>
         </form>
       </CardContent>
     </Card>

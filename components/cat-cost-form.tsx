@@ -90,7 +90,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" variant="destructive" className="w-full">Calculate Cost</Button>
+          <Button aria-label="Calculate Cost" type="submit" variant="destructive" className="w-full">Calculate Cost</Button>
         </form>
       </CardContent>
     </Card>

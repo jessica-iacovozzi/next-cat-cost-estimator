@@ -82,7 +82,7 @@ export default function Estimate() {
       <CatCostForm onSubmit={handleSubmit} />
 
       {loading ? (
-        <Button variant="ghost" disabled className="w-full">
+        <Button aria-label="Calculating..." variant="ghost" disabled className="w-full">
           Calculating...
         </Button>
       ) : breakdown.length > 0 ? (
@@ -94,6 +94,7 @@ export default function Estimate() {
             </div>
             {user ? (
               <Button 
+                aria-label="Customize Estimate" 
                 onClick={async () => {
                   if (!estimateCreated) {
                     setEstimateCreated(true);
@@ -108,6 +109,7 @@ export default function Estimate() {
               </Button>
             ) : (
               <Button 
+                aria-label="Sign in to customize estimate" 
                 variant="outline" 
                 onClick={() => {
                   localStorage.setItem('pendingCatCostFormData', JSON.stringify(formData));

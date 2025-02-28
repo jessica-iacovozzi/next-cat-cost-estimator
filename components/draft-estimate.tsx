@@ -79,7 +79,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                 <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
                 <CardDescription className="px-3">{estimateName}</CardDescription>
             </div>
-            <Button onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
+            <Button aria-label="Add expense" onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
           </CardHeader>
           <CardContent className="text-secondary">
             <table className="w-full text-left table-auto">
@@ -135,6 +135,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                 </tfoot>
             </table>
             <Button
+                aria-label="Save draft estimate"
                 className="w-full mt-4" 
                 variant="destructive"
                 onClick={async () => {
@@ -171,6 +172,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
             </Button>
             
             <Button
+                aria-label="Delete draft estimate"
                 className="w-full mt-4"
                 variant="default"
                 onClick={async () => {

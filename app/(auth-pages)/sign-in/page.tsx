@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default async function Login(props: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const { error, success, returnTo } = props.searchParams;
+export default async function Login(props: { 
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
+}) {
+  const searchParams = await props.searchParams;
+  const { error, success, returnTo } = searchParams;
   
   let message: Message | null = null;
   if (error) {

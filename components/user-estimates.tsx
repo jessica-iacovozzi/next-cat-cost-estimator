@@ -160,7 +160,7 @@ export default function UserEstimates() {
         <>
         <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
         <Link href="/estimate">
-            <Button variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
+            <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
                 Create new estimate
             </Button>
         </Link>
@@ -191,7 +191,7 @@ export default function UserEstimates() {
                             Updated {estimateUpdateDates[index]}
                         </CardDescription>
                     </div>
-                    <Button onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
+                    <Button aria-label="Add expense" onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
                 </CardHeader>
                 <CardContent className="text-secondary flex-1 flex flex-col justify-between">
                     <table className="w-full text-left table-auto">
@@ -300,6 +300,7 @@ export default function UserEstimates() {
                         </tfoot>
                     </table>
                     <Button
+                        aria-label="Delete estimate"
                         className="w-full mt-4" 
                         onClick={async () => {
                             setIsLoading(true);
