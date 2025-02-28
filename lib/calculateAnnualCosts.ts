@@ -206,6 +206,7 @@ export async function getUserExpenses(estimateId: number): Promise<Estimate[]> {
     .from("user_expenses")
     .select('id, user_estimate_id, name, cost')
     .eq('user_estimate_id', estimateId)
+    .order('name', { ascending: true })
 
   if (error || !data) throw new Error(`Failed to get user expenses: ${error.message}`);
   return data;
