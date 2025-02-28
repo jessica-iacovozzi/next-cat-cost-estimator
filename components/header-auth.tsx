@@ -66,11 +66,8 @@ export default async function AuthButton() {
     </div>
   ) : (
     <div className="flex gap-2">
-      <Button aria-label="Sign in" asChild size="sm" variant={"outline"}>
+      <Button aria-label="Sign in" asChild size="sm">
         <Link href="/sign-in">Sign in</Link>
-      </Button>
-      <Button aria-label="Sign up" asChild size="sm" variant={"default"}>
-        <Link href="/sign-up">Sign up</Link>
       </Button>
       <ThemeSwitcher />
     </div>
