@@ -160,7 +160,7 @@ export default function UserEstimates() {
         <>
         <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
         <Link href="/estimate">
-            <Button variant="orange" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
+            <Button variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
                 Create new estimate
             </Button>
         </Link>
@@ -300,7 +300,7 @@ export default function UserEstimates() {
                         </tfoot>
                     </table>
                     <Button
-                        className="w-full mt-4 bg-red-600 hover:bg-red-700 text-foreground" 
+                        className="w-full mt-4" 
                         onClick={async () => {
                             setIsLoading(true);
                             try {
