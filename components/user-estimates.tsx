@@ -202,6 +202,7 @@ export default function UserEstimates() {
                                 <td className="p-3 border-b border-slate-200 w-5/6">
                                     <input
                                         type="text"
+                                        aria-label="Expense name"
                                         value={item.name}
                                         onChange={(e) => {
                                             const user_estimate_id = estimate[0]?.user_estimate_id;
@@ -241,6 +242,7 @@ export default function UserEstimates() {
                                     <input
                                         type="number"
                                         value={item.cost}
+                                        aria-label="Expense cost"
                                         onChange={(e) => {
                                             const user_estimate_id = estimate[0]?.user_estimate_id;
                                             if (!user_estimate_id) return;
