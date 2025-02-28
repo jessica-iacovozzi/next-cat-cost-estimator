@@ -145,7 +145,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                       title: "Success",
                       description: "Estimate saved successfully! Redirecting to saved estimates...",
                       variant: "success",
-                      duration: 3000,
+                      duration: 2500,
                       position: "center"
                     });
                     
@@ -181,7 +181,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                       title: "Success",
                       description: "Estimate deleted successfully! Redirecting to saved estimates...",
                       variant: "success",
-                      duration: 3000,
+                      duration: 2500,
                       position: "center"
                     });
                     
