@@ -94,7 +94,7 @@ export default function Estimate() {
             </div>
             {user ? (
               <Button 
-                variant="outline" 
+                variant="orange" 
                 onClick={async () => {
                   if (!estimateCreated) {
                     setEstimateCreated(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import { createUserExpense, getUserExpenses, getUserEstimates, deleteEstimate, deleteExpenses, deleteExpense, updateExpense } from "@/lib/calculateAnnualCosts";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
@@ -33,6 +33,7 @@ export default function UserEstimates() {
     const [estimateDates, setEstimateDates] = useState<string[]>([]);
     const [estimateUpdateDates, setEstimateUpdateDates] = useState<string[]>([]);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+    const originalExpenseValues = useRef<Map<number, { name: string, cost: number }>>(new Map());
 
     const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
@@ -53,16 +54,28 @@ export default function UserEstimates() {
             const names: string[] = [];
             const dates: string[] = [];
             const updateDates: string[] = [];
+
+            // Clear the original values map when fetching new data
+            originalExpenseValues.current.clear();
+
             for (const estimate of estimates) {
                 const user_expenses: Estimate[] = await getUserExpenses(estimate.id);
                 if (user_expenses.length > 0) {
+                    // Store original values for each expense
+                    user_expenses.forEach(expense => {
+                        originalExpenseValues.current.set(expense.id, {
+                            name: expense.name,
+                            cost: expense.cost
+                        });
+                    });
+
                     allEstimates.push(user_expenses);
                     names.push(estimate.name || `Custom Estimate ${allEstimates.length}`);
                     const formattedDate = estimate.created_at 
                         ? new Date(estimate.created_at).toLocaleDateString(undefined, options) 
                         : 'No date available';
                     dates.push(formattedDate);
-                    
+
                     const formattedUpdateDate = estimate.updated_at 
                         ? new Date(estimate.updated_at).toLocaleDateString(undefined, options) 
                         : 'No update date available';
@@ -87,7 +100,7 @@ export default function UserEstimates() {
 
     const handleCreateExpense = async (data: { name: string; cost: number, user_estimate_id: number }) => {
         setIsLoading(true);
-        
+
         try {
             await createUserExpense(data, data.user_estimate_id);
             setActiveEstimateIndex(null);
@@ -102,7 +115,7 @@ export default function UserEstimates() {
 
     const handleDeleteExpense = async (expenseId: number) => {
         setIsLoading(true);
-        
+
         try {
             await deleteExpense(expenseId);
             // Refresh data to get updated timestamps
@@ -119,6 +132,13 @@ export default function UserEstimates() {
             try {
                 setUpdatingExpenseIds(prev => [...prev, expenseId]);
                 await updateExpense(expenseId, data);
+
+                // Update the original values after a successful update
+                originalExpenseValues.current.set(expenseId, {
+                    name: data.name,
+                    cost: data.cost
+                });
+
                 // Refresh data to get updated timestamps
                 setRefreshTrigger(prev => prev + 1);
             } catch (error) {
@@ -197,11 +217,22 @@ export default function UserEstimates() {
                                             }));
                                         }}
                                         onBlur={() => {
-                                            // Update the expense in the database when input loses focus
-                                            handleExpenseUpdate(item.id, { 
-                                                name: item.name, 
-                                                cost: item.cost 
-                                            });
+                                            // Get the original values
+                                            const originalValues = originalExpenseValues.current.get(item.id);
+                                            
+                                            // Only update if the value has changed
+                                            if (originalValues && originalValues.name !== item.name) {
+                                                handleExpenseUpdate(item.id, { 
+                                                    name: item.name, 
+                                                    cost: item.cost 
+                                                });
+                                                
+                                                // Update the original value after successful update
+                                                originalExpenseValues.current.set(item.id, {
+                                                    name: item.name,
+                                                    cost: item.cost
+                                                });
+                                            }
                                         }}
                                         className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                                     />
@@ -224,11 +255,22 @@ export default function UserEstimates() {
                                             }));
                                         }}
                                         onBlur={() => {
-                                            // Update the expense in the database when input loses focus
-                                            handleExpenseUpdate(item.id, { 
-                                                name: item.name, 
-                                                cost: Number(item.cost) 
-                                            });
+                                            // Get the original values
+                                            const originalValues = originalExpenseValues.current.get(item.id);
+                                            
+                                            // Only update if the value has changed
+                                            if (originalValues && originalValues.cost !== item.cost) {
+                                                handleExpenseUpdate(item.id, { 
+                                                    name: item.name, 
+                                                    cost: Number(item.cost) 
+                                                });
+                                                
+                                                // Update the original value after successful update
+                                                originalExpenseValues.current.set(item.id, {
+                                                    name: item.name,
+                                                    cost: item.cost
+                                                });
+                                            }
                                         }}
                                         className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
                                     />

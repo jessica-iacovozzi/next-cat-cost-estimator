@@ -33,7 +33,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
   return (
     <Card className="flex-none p-5 shadow-lg rounded-xl">
       <CardHeader>
-        <CardTitle>Cat Annual Cost Estimator</CardTitle>
+        <CardTitle>Quebec Annual Cost of Care Estimator</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -84,7 +84,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
           <div className="flex items-center space-x-2">
             <input type="checkbox" {...register("insurance")} className="w-5 h-5" />
             <label className="font-medium text-secondary">Add Insurance?</label>
-            <InfoTooltip content="The AMVQ believes that pet insurance is well worth the cost!">
+            <InfoTooltip content="Insurance covers unexpected vet bills for accidents, injuries, and illnesses.The AMVQ believes that pet insurance is well worth the cost!">
               <InfoIcon className="w-5 h-5 text-secondary" />
             </InfoTooltip>
           </div>
