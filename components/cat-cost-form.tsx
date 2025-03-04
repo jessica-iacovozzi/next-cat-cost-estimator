@@ -8,6 +8,8 @@ import { Select, SelectItem } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InfoTooltip from "@/components/ui/info-tooltip";
 import { InfoIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FormSkeletonLoader } from "@/components/ui/skeleton";
 
 const catCostSchema = z.object({
   lifeStage: z.enum(["Kitten", "Adult", "Senior"], {
@@ -25,10 +27,21 @@ const catCostSchema = z.object({
 export type CatCostFormValues = z.infer<typeof catCostSchema>;
 
 export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostFormValues) => void }) {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   const { register, handleSubmit, control, formState: { errors }, } = useForm<CatCostFormValues>({
     resolver: zodResolver(catCostSchema),
     defaultValues: { insurance: false },
   });
+
+  // Show skeleton loader during initial render to prevent layout shift
+  if (!isClient) {
+    return <FormSkeletonLoader />;
+  }
 
   return (
     <Card className="flex-none p-5 shadow-lg rounded-xl">

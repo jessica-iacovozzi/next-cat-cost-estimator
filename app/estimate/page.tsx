@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { CatCostFormValues } from "@/components/cat-cost-form";
 import { useUser } from "@/hooks/useUser";
+import { BreakdownSkeletonLoader } from "@/components/ui/skeleton";
 
 export default function Estimate() {
   const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
@@ -82,9 +83,7 @@ export default function Estimate() {
       <CatCostForm onSubmit={handleSubmit} />
 
       {loading ? (
-        <Button aria-label="Calculating..." variant="ghost" disabled className="w-full">
-          Calculating...
-        </Button>
+        <BreakdownSkeletonLoader />
       ) : breakdown.length > 0 ? (
         <Card className="flex-1 w-full shadow-md rounded-xl">
           <CardHeader className="flex justify-between items-center">

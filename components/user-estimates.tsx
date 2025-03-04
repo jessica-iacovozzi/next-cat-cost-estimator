@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
-import { Spinner } from "./ui/spinner";
+import { EstimatesSkeletonLoader } from "./ui/skeleton";
 import Link from "next/link";
 
 export interface UserEstimate {
@@ -150,11 +150,8 @@ export default function UserEstimates() {
         [setRefreshTrigger]
     );
 
-    if (isLoading) return (
-        <div className="flex items-center justify-center min-h-[200px]">
-            <Spinner size={32} text="Loading your estimates..." />
-        </div>
-    );
+    // Use skeleton loader instead of spinner for better CLS
+    if (isLoading) return <EstimatesSkeletonLoader />;
 
     if (estimates.length > 0) return (
         <>
