@@ -111,7 +111,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               className="w-5 h-5" 
             />
             <label htmlFor="insurance" className="font-medium text-secondary">Add Insurance?</label>
-            <InfoTooltip content="Insurance covers unexpected vet bills for accidents, injuries, and illnesses.The AMVQ believes that pet insurance is well worth the cost!">
+            <InfoTooltip content="Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!">
               <InfoIcon className="w-5 h-5 text-secondary" />
             </InfoTooltip>
           </div>
