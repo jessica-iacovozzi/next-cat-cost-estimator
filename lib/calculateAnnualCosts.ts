@@ -137,12 +137,60 @@ export async function createUserExpense(expense: CustomExpenseFormValues, estima
 
   if (!user) throw new Error("User not found");
 
+  // Get all existing expenses for this estimate to determine alphabetical position
+  const { data: existingExpenses } = await supabase
+    .from("user_expenses")
+    .select('name, order')
+    .eq('user_estimate_id', estimateId)
+    .order('name', { ascending: true });
+
+  // Determine the alphabetical position for the new expense
+  let newOrder = 0;
+  let inserted = false;
+  
+  if (existingExpenses && existingExpenses.length > 0) {
+    // Find the position where the new expense should be inserted alphabetically
+    for (let i = 0; i < existingExpenses.length; i++) {
+      if (expense.name.toLowerCase() < existingExpenses[i].name.toLowerCase()) {
+        newOrder = i;
+        inserted = true;
+        break;
+      }
+    }
+    
+    // If the new expense should be at the end alphabetically
+    if (!inserted) {
+      newOrder = existingExpenses.length;
+    }
+    
+    // If we're inserting in the middle, we need to increment the order of all expenses after this position
+    if (inserted) {
+      const { data: expensesToUpdate } = await supabase
+        .from("user_expenses")
+        .select('id, order')
+        .eq('user_estimate_id', estimateId)
+        .gte('order', newOrder)
+        .order('order', { ascending: true });
+      
+      if (expensesToUpdate && expensesToUpdate.length > 0) {
+        // Update each expense's order one by one
+        for (const expense of expensesToUpdate) {
+          await supabase
+            .from("user_expenses")
+            .update({ order: expense.order + 1 })
+            .eq('id', expense.id);
+        }
+      }
+    }
+  }
+
   const { data, error } = await supabase
     .from("user_expenses")
     .insert({
         user_estimate_id: estimateId,
         name: expense.name,
-        cost: expense.cost
+        cost: expense.cost,
+        order: newOrder
     });
 
   if (error) throw new Error(`Failed to create user expense: ${error.message}`);
@@ -163,15 +211,55 @@ export async function createUserExpenses(expenses: CustomExpenseFormValues[], es
 
   if (!user) throw new Error("User not found");
 
+  // Get all existing expenses for this estimate
+  const { data: existingExpenses } = await supabase
+    .from("user_expenses")
+    .select('name, order')
+    .eq('user_estimate_id', estimateId);
+  
+  // Sort all expenses (existing + new) alphabetically
+  const allExpenses = [...(existingExpenses || []).map(e => ({ name: e.name, existingOrder: e.order, isNew: false })),
+                       ...expenses.map(e => ({ name: e.name, cost: e.cost, isNew: true }))];
+  
+  allExpenses.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  
+  // Assign new order values to all expenses
+  const newOrderMap = new Map();
+  allExpenses.forEach((expense, index) => {
+    if (!expense.isNew) {
+      // If existing expense's order changes, we'll update it later
+      newOrderMap.set(expense.name, index);
+    }
+  });
+  
+  // First, update existing expenses if their order has changed
+  if (existingExpenses && existingExpenses.length > 0) {
+    for (const expense of existingExpenses) {
+      const newOrder = newOrderMap.get(expense.name);
+      if (newOrder !== undefined && newOrder !== expense.order) {
+        await supabase
+          .from("user_expenses")
+          .update({ order: newOrder })
+          .eq('user_estimate_id', estimateId)
+          .eq('name', expense.name);
+      }
+    }
+  }
+  
+  // Then insert new expenses with their calculated order
+  const expensesToInsert = expenses.map(expense => {
+    const order = newOrderMap.get(expense.name) || 0;
+    return {
+      name: expense.name,
+      cost: expense.cost,
+      user_estimate_id: estimateId,
+      order
+    };
+  });
+  
   const { data, error } = await supabase
     .from("user_expenses")
-    .insert(
-      expenses.map(expense => ({
-        name: expense.name,
-        cost: expense.cost,
-        user_estimate_id: estimateId
-      }))
-    )
+    .insert(expensesToInsert)
 
   if (error) throw new Error(`Failed to create user expenses: ${error.message}`);
   
@@ -204,9 +292,9 @@ export async function getUserEstimates() {
 export async function getUserExpenses(estimateId: number): Promise<Estimate[]> {
   const { data, error } = await supabase
     .from("user_expenses")
-    .select('id, user_estimate_id, name, cost')
+    .select('id, user_estimate_id, name, cost, order')
     .eq('user_estimate_id', estimateId)
-    .order('name', { ascending: true })
+    .order('order', { ascending: true })
 
   if (error || !data) throw new Error(`Failed to get user expenses: ${error.message}`);
   return data;
@@ -296,4 +384,45 @@ export async function updateExpense(expenseId: number, data: { name: string, cos
   if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
   
   return updatedExpense;
+}
+
+export async function updateExpenseOrder(expenseId: number, newOrder: number) {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not found");
+
+  // First, get the expense to find its user_estimate_id and current order
+  const { data: expense, error: fetchError } = await supabase
+    .from("user_expenses")
+    .select("user_estimate_id, order")
+    .eq('id', expenseId)
+    .single();
+
+  if (fetchError) throw new Error(`Failed to fetch expense: ${fetchError.message}`);
+  
+  const currentOrder = expense.order;
+  const estimateId = expense.user_estimate_id;
+  
+  // If the order hasn't changed, do nothing
+  if (currentOrder === newOrder) {
+    return;
+  }
+  
+  // Use the reorder_expenses stored procedure to handle all the reordering in a single transaction
+  const { error } = await supabase.rpc('reorder_expenses', {
+    p_expense_id: expenseId,
+    p_estimate_id: estimateId,
+    p_old_order: currentOrder,
+    p_new_order: newOrder
+  });
+  
+  if (error) throw new Error(`Failed to reorder expenses: ${error.message}`);
+  
+  // Update the updated_at timestamp of the related user estimate
+  const { error: updateEstimateError } = await supabase
+    .from("user_estimates")
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', estimateId);
+  
+  if (updateEstimateError) throw new Error(`Failed to update estimate timestamp: ${updateEstimateError.message}`);
 }

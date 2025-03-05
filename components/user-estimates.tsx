@@ -1,12 +1,12 @@
 "use client";
 
-import { createUserExpense, getUserExpenses, getUserEstimates, deleteEstimate, deleteExpenses, deleteExpense, updateExpense } from "@/lib/calculateAnnualCosts";
+import { createUserExpense, getUserExpenses, getUserEstimates, deleteEstimate, deleteExpenses, deleteExpense, updateExpense, updateExpenseOrder } from "@/lib/calculateAnnualCosts";
 import { useState, useEffect, useCallback, useRef } from "react";
 import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, GripHorizontal } from "lucide-react";
 import { EstimatesSkeletonLoader } from "./ui/skeleton";
 import Link from "next/link";
 
@@ -22,6 +22,7 @@ export interface Estimate {
     user_estimate_id: number;
     name: string;
     cost: number;
+    order: number;
 }
 
 export default function UserEstimates() {
@@ -33,6 +34,9 @@ export default function UserEstimates() {
     const [estimateDates, setEstimateDates] = useState<string[]>([]);
     const [estimateUpdateDates, setEstimateUpdateDates] = useState<string[]>([]);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+    const [draggedExpense, setDraggedExpense] = useState<{ id: number, estimateIndex: number, expenseIndex: number } | null>(null);
+    const [dragOverExpense, setDragOverExpense] = useState<{ id: number, estimateIndex: number, expenseIndex: number } | null>(null);
+    
     const originalExpenseValues = useRef<Map<number, { name: string, cost: number }>>(new Map());
 
     const options: Intl.DateTimeFormatOptions = {
@@ -55,13 +59,11 @@ export default function UserEstimates() {
             const dates: string[] = [];
             const updateDates: string[] = [];
 
-            // Clear the original values map when fetching new data
             originalExpenseValues.current.clear();
 
             for (const estimate of estimates) {
                 const user_expenses: Estimate[] = await getUserExpenses(estimate.id);
                 if (user_expenses.length > 0) {
-                    // Store original values for each expense
                     user_expenses.forEach(expense => {
                         originalExpenseValues.current.set(expense.id, {
                             name: expense.name,
@@ -93,7 +95,6 @@ export default function UserEstimates() {
         }
     };
 
-    // Fetch data on mount and when refreshTrigger changes
     useEffect(() => {
         fetchData();
     }, [refreshTrigger]);
@@ -104,7 +105,6 @@ export default function UserEstimates() {
         try {
             await createUserExpense(data, data.user_estimate_id);
             setActiveEstimateIndex(null);
-            // Refresh data to get updated timestamps
             setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             console.error("Error submitting expense:", error);
@@ -118,10 +118,26 @@ export default function UserEstimates() {
 
         try {
             await deleteExpense(expenseId);
-            // Refresh data to get updated timestamps
             setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             console.error("Error deleting expense:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleExpenseReorder = async (draggedId: number, newOrder: number) => {
+        try {
+            setIsLoading(true);
+            
+            setDraggedExpense(null);
+            setDragOverExpense(null);
+            
+            await updateExpenseOrder(draggedId, newOrder);
+            
+            setRefreshTrigger(prev => prev + 1);
+        } catch (error) {
+            console.error("Error reordering expense:", error);
         } finally {
             setIsLoading(false);
         }
@@ -133,13 +149,11 @@ export default function UserEstimates() {
                 setUpdatingExpenseIds(prev => [...prev, expenseId]);
                 await updateExpense(expenseId, data);
 
-                // Update the original values after a successful update
                 originalExpenseValues.current.set(expenseId, {
                     name: data.name,
                     cost: data.cost
                 });
 
-                // Refresh data to get updated timestamps
                 setRefreshTrigger(prev => prev + 1);
             } catch (error) {
                 console.error("Error updating expense:", error);
@@ -150,7 +164,6 @@ export default function UserEstimates() {
         [setRefreshTrigger]
     );
 
-    // Use skeleton loader instead of spinner for better CLS
     if (isLoading) return <EstimatesSkeletonLoader />;
 
     if (estimates.length > 0) return (
@@ -161,7 +174,7 @@ export default function UserEstimates() {
                 Create new estimate
             </Button>
         </Link>
-        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-8 lg:gap-16">
         {estimates.map((estimate, index) => (
             <div key={index} className="flex h-full">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {
@@ -195,8 +208,45 @@ export default function UserEstimates() {
                         <tbody>
                         {estimate
                             .map((item, index) => (
-                            <tr key={index}>
-                                <td className="p-3 border-b border-slate-200 w-5/6">
+                            <tr 
+                                key={index}
+                                draggable
+                                onDragStart={(e) => {
+                                    e.dataTransfer.effectAllowed = 'move';
+                                    setDraggedExpense({ id: item.id, estimateIndex: index, expenseIndex: index });
+                                }}
+                                onDragEnd={() => {
+                                    setDraggedExpense(null);
+                                    setDragOverExpense(null);
+                                }}
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                    if (draggedExpense && draggedExpense.id !== item.id) {
+                                        setDragOverExpense({ id: item.id, estimateIndex: index, expenseIndex: index });
+                                    }
+                                }}
+                                onDragLeave={() => {
+                                    if (dragOverExpense?.id === item.id) {
+                                        setDragOverExpense(null);
+                                    }
+                                }}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    if (draggedExpense && draggedExpense.id !== item.id) {
+                                        handleExpenseReorder(draggedExpense.id, item.order);
+                                        // Clear the highlight after drop
+                                        setDragOverExpense(null);
+                                    }
+                                }}
+                                className={dragOverExpense?.id === item.id ? 'bg-slate-100' : ''}
+                            >
+                                <td className="w-10 border-b border-slate-200 text-center cursor-move">
+                                    <div className="flex justify-center items-center">
+                                        <GripHorizontal size={16} className="text-slate-500" />
+                                    </div>
+                                </td>
+                                <td className="p-3 border-b border-slate-200"
+                                >
                                     <input
                                         type="text"
                                         aria-label="Expense name"
@@ -289,18 +339,20 @@ export default function UserEstimates() {
                         </tbody>
                         <tfoot>
                         <tr>
+                            <td className="w-10 border-t border-slate-300"></td>
                             <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
                             Total:
                             </td>
                             <td className="p-4 text-end font-semibold text-slate-800 border-t border-slate-300">
                             {estimate.reduce((acc, item) => acc + item.cost, 0)}$
                             </td>
+                            <td className="w-10 border-t border-slate-300"></td>
                         </tr>
                         </tfoot>
                     </table>
                     <Button
                         aria-label="Delete estimate"
-                        className="w-full mt-4" 
+                        className="w-full mt-4 bg-red-500 hover:bg-red-600" 
                         onClick={async () => {
                             setIsLoading(true);
                             try {
