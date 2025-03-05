@@ -125,10 +125,10 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
+                    <td className="p-4 text-left font-bold text-red-600 border-t border-slate-300">
                     Total:
                     </td>
-                    <td className="p-4 text-end font-semibold text-slate-800 border-t border-slate-300">
+                    <td className="p-4 text-end font-semibold text-red-600 border-t border-slate-300">
                     {breakdown.reduce((acc, item) => acc + item.cost, 0)}$
                     </td>
                 </tr>

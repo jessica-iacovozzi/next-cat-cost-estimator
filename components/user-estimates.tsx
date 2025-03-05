@@ -340,10 +340,10 @@ export default function UserEstimates() {
                         <tfoot>
                         <tr>
                             <td className="w-10 border-t border-slate-300"></td>
-                            <td className="p-4 text-left font-bold text-slate-800 border-t border-slate-300">
+                            <td className="p-4 text-left font-bold text-red-600 border-t border-slate-300">
                             Total:
                             </td>
-                            <td className="p-4 text-end font-semibold text-slate-800 border-t border-slate-300">
+                            <td className="p-4 text-end font-semibold text-red-600 border-t border-slate-300">
                             {estimate.reduce((acc, item) => acc + item.cost, 0)}$
                             </td>
                             <td className="w-10 border-t border-slate-300"></td>
