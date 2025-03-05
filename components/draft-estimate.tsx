@@ -7,9 +7,10 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, Info as InfoIcon } from "lucide-react";
 import { useToast } from "./ui/toast-context";
 import { Spinner } from "./ui/spinner";
+import InfoTooltip from "./ui/info-tooltip";
 
 interface DraftEstimateProps {
     estimateId: string;
@@ -88,16 +89,23 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                     .map((item, index) => (
                     <tr key={index}>
                         <td className="p-3 border-b border-slate-200 w-5/6">
-                            <input
-                                type="text"
-                                value={item.name}
-                                onChange={(e) => {
-                                    const newBreakdown = [...breakdown];
-                                    newBreakdown[index].name = e.target.value;
-                                    setBreakdown(newBreakdown);
-                                }}
-                                className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
-                            />
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => {
+                                        const newBreakdown = [...breakdown];
+                                        newBreakdown[index].name = e.target.value;
+                                        setBreakdown(newBreakdown);
+                                    }}
+                                    className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                                />
+                                {item.tooltip && item.tooltip.length > 0 && (
+                                    <InfoTooltip content={item.tooltip}>
+                                        <InfoIcon className="h-4 w-4 text-slate-500" />
+                                    </InfoTooltip>
+                                )}
+                            </div>
                         </td>
                         <td className="p-3 border-b border-slate-200 w-1/6">
                             <input

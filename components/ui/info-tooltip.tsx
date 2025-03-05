@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Tooltip } from "radix-ui";
 
-interface TooltipItem {
+export interface TooltipItem {
   text: string;
   link?: string;
 }
