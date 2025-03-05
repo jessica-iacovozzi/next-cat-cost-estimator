@@ -115,10 +115,13 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
 }
 
 export function generateEstimateName(formData: CatCostFormValues): string {
-  return `${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
+  if (formData.name === '') {
+    return `${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
+  }
+  return `${formData.name} ( ${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''})`;
 }
 
-export async function createUserEstimate(formData: CatCostFormValues, estimateName: string) {
+export async function createUserEstimate(estimateName: string) {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) throw new Error("User not found");

@@ -33,7 +33,7 @@ export default function Estimate() {
           setEstimateCreated(true); 
           const name = generateEstimateName(parsedData);
           setEstimateName(name);
-          const { id } = await createUserEstimate(parsedData, name);
+          const { id } = await createUserEstimate(name);
           router.push(`/protected/estimates?estimateId=${id}&estimateName=${name}`);
           localStorage.removeItem('pendingCatCostFormData');
         };
@@ -99,7 +99,7 @@ export default function Estimate() {
                 onClick={async () => {
                   if (!estimateCreated) {
                     setEstimateCreated(true);
-                    const { id } = await createUserEstimate(formData as CatCostFormValues, estimateName);
+                    const { id } = await createUserEstimate(estimateName);
                     router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
                   } else {
                     router.push('/protected/estimates');
