@@ -6,7 +6,7 @@ import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Trash2, GripHorizontal } from "lucide-react";
+import { Trash2, GripHorizontal, Pencil, Check, DollarSign } from "lucide-react";
 import { EstimatesSkeletonLoader } from "./ui/skeleton";
 import Link from "next/link";
 
@@ -30,6 +30,7 @@ export default function UserEstimates() {
     const [activeEstimateIndex, setActiveEstimateIndex] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [updatingExpenseIds, setUpdatingExpenseIds] = useState<number[]>([]);
+    const [editingExpenseIds, setEditingExpenseIds] = useState<number[]>([]);
     const [estimateNames, setEstimateNames] = useState<string[]>([]);
     const [estimateDates, setEstimateDates] = useState<string[]>([]);
     const [estimateUpdateDates, setEstimateUpdateDates] = useState<string[]>([]);
@@ -144,16 +145,20 @@ export default function UserEstimates() {
     };
 
     const handleExpenseUpdate = useCallback(
-        async (expenseId: number, data: { name: string, cost: number }) => {
+        async (expenseId: number, data?: { name: string, cost: number }) => {
             try {
                 setUpdatingExpenseIds(prev => [...prev, expenseId]);
-                await updateExpense(expenseId, data);
+                
+                if (data) {
+                    await updateExpense(expenseId, data);
 
-                originalExpenseValues.current.set(expenseId, {
-                    name: data.name,
-                    cost: data.cost
-                });
-
+                    originalExpenseValues.current.set(expenseId, {
+                        name: data.name,
+                        cost: data.cost
+                    });
+                }
+                
+                setEditingExpenseIds(prev => prev.filter(id => id !== expenseId));
                 setRefreshTrigger(prev => prev + 1);
             } catch (error) {
                 console.error("Error updating expense:", error);
@@ -163,20 +168,32 @@ export default function UserEstimates() {
         },
         [setRefreshTrigger]
     );
+    
+    const toggleEditMode = (expenseId: number) => {
+        setEditingExpenseIds(prev => {
+            if (prev.includes(expenseId)) {
+                return prev.filter(id => id !== expenseId);
+            } else {
+                return [...prev, expenseId];
+            }
+        });
+    };
 
     if (isLoading) return <EstimatesSkeletonLoader />;
 
     if (estimates.length > 0) return (
         <>
+        <div className="flex justify-between w-full lg:mx-24">
         <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
         <Link href="/estimate">
             <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
                 Create new estimate
             </Button>
         </Link>
-        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-8 lg:gap-16">
+        </div>
+        <div className="flex flex-col gap-16 lg:gap-24 w-full lg:mx-32">
         {estimates.map((estimate, index) => (
-            <div key={index} className="flex h-full">
+            <div key={index} className="flex">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {
                     if (!open) {
                         setActiveEstimateIndex(null);
@@ -234,7 +251,6 @@ export default function UserEstimates() {
                                     e.preventDefault();
                                     if (draggedExpense && draggedExpense.id !== item.id) {
                                         handleExpenseReorder(draggedExpense.id, item.order);
-                                        // Clear the highlight after drop
                                         setDragOverExpense(null);
                                     }
                                 }}
@@ -245,12 +261,13 @@ export default function UserEstimates() {
                                         <GripHorizontal size={16} className="text-slate-500" />
                                     </div>
                                 </td>
-                                <td className="p-3 border-b border-slate-200"
-                                >
+                                <td className="p-3 border-b border-slate-200">
                                     <input
                                         type="text"
                                         aria-label="Expense name"
                                         value={item.name}
+                                        readOnly={!editingExpenseIds.includes(item.id)}
+                                        tabIndex={!editingExpenseIds.includes(item.id) ? -1 : undefined}
                                         onChange={(e) => {
                                             const user_estimate_id = estimate[0]?.user_estimate_id;
                                             if (!user_estimate_id) return;
@@ -264,32 +281,16 @@ export default function UserEstimates() {
                                                 return estimateArray;
                                             }));
                                         }}
-                                        onBlur={() => {
-                                            // Get the original values
-                                            const originalValues = originalExpenseValues.current.get(item.id);
-                                            
-                                            // Only update if the value has changed
-                                            if (originalValues && originalValues.name !== item.name) {
-                                                handleExpenseUpdate(item.id, { 
-                                                    name: item.name, 
-                                                    cost: item.cost 
-                                                });
-                                                
-                                                // Update the original value after successful update
-                                                originalExpenseValues.current.set(item.id, {
-                                                    name: item.name,
-                                                    cost: item.cost
-                                                });
-                                            }
-                                        }}
-                                        className="block w-full text-sm text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
+                                        className={`block w-full text-sm text-slate-800 ${editingExpenseIds.includes(item.id) ? 'bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-300' : 'bg-transparent focus:outline-none'} border-none rounded px-2 py-1 ${!editingExpenseIds.includes(item.id) ? 'cursor-default' : ''}`}
                                     />
                                 </td>
-                                <td className="p-3 border-b border-slate-200 w-1/6">
+                                <td className="p-3 border-b border-slate-200 w-[10%]">
                                     <input
                                         type="number"
                                         value={item.cost}
                                         aria-label="Expense cost"
+                                        readOnly={!editingExpenseIds.includes(item.id)}
+                                        tabIndex={!editingExpenseIds.includes(item.id) ? -1 : undefined}
                                         onChange={(e) => {
                                             const user_estimate_id = estimate[0]?.user_estimate_id;
                                             if (!user_estimate_id) return;
@@ -303,26 +304,35 @@ export default function UserEstimates() {
                                                 return estimateArray;
                                             }));
                                         }}
-                                        onBlur={() => {
-                                            // Get the original values
-                                            const originalValues = originalExpenseValues.current.get(item.id);
-                                            
-                                            // Only update if the value has changed
-                                            if (originalValues && originalValues.cost !== item.cost) {
-                                                handleExpenseUpdate(item.id, { 
-                                                    name: item.name, 
-                                                    cost: Number(item.cost) 
-                                                });
+                                        className={`block w-full text-sm text-end text-slate-800 ${editingExpenseIds.includes(item.id) ? 'bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-300' : 'bg-transparent focus:outline-none'} border-none rounded px-2 py-1 ${!editingExpenseIds.includes(item.id) ? 'cursor-default' : ''}`}
+                                    />
+                                </td>
+                                <td className="p-3 border-b border-slate-200 w-10 text-center">
+                                    <button 
+                                        onClick={() => {
+                                            if (editingExpenseIds.includes(item.id)) {
+                                                const originalValues = originalExpenseValues.current.get(item.id);
+                                                const hasNameChanged = originalValues && originalValues.name !== item.name;
+                                                const hasCostChanged = originalValues && originalValues.cost !== item.cost;
                                                 
-                                                // Update the original value after successful update
-                                                originalExpenseValues.current.set(item.id, {
-                                                    name: item.name,
-                                                    cost: item.cost
-                                                });
+                                                if (hasNameChanged || hasCostChanged) {
+                                                    handleExpenseUpdate(item.id, { 
+                                                        name: item.name, 
+                                                        cost: Number(item.cost) 
+                                                    });
+                                                } else {
+                                                    toggleEditMode(item.id);
+                                                }
+                                            } else {
+                                                toggleEditMode(item.id);
                                             }
                                         }}
-                                        className="block w-full text-sm text-end text-slate-800 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-slate-300 rounded px-2 py-1"
-                                    />
+                                        className="text-slate-500 hover:text-green-500 transition-colors"
+                                        aria-label={editingExpenseIds.includes(item.id) ? "Save expense" : "Edit expense"}
+                                        disabled={updatingExpenseIds.includes(item.id)}
+                                    >
+                                        {editingExpenseIds.includes(item.id) ? <Check size={16} /> : <Pencil size={16} />}                                        
+                                    </button>
                                 </td>
                                 <td className="p-3 border-b border-slate-200 w-10 text-center">
                                     <button 
@@ -366,7 +376,6 @@ export default function UserEstimates() {
                                 await deleteExpenses(user_estimate_id);
                                 await deleteEstimate(user_estimate_id);
                                 
-                                // Refresh data to get updated timestamps
                                 setRefreshTrigger(prev => prev + 1);
                             } catch (error) {
                                 console.error('Error deleting custom estimate:', error);
