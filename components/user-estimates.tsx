@@ -184,12 +184,12 @@ export default function UserEstimates() {
     if (estimates.length > 0) return (
         <>
         <div className="flex justify-between w-full lg:mx-24">
-        <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
-        <Link href="/estimate">
-            <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
-                Create new estimate
-            </Button>
-        </Link>
+            <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
+            <Link href="/estimate">
+                <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
+                    Create new estimate
+                </Button>
+            </Link>
         </div>
         <div className="flex flex-col gap-16 lg:gap-24 w-full lg:mx-32">
         {estimates.map((estimate, index) => (

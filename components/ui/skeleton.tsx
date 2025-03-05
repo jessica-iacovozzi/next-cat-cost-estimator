@@ -49,12 +49,12 @@ export function CardSkeleton() {
 
 export function EstimatesSkeletonLoader() {
   return (
-    <div className="w-full space-y-6">
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-8 w-1/3 mb-12" />
+    <div className="flex flex-col justify-center w-full">
+      <div className="flex justify-between w-full px-24">
+        <Skeleton className="h-8 w-1/4 mb-12" />
         <Skeleton className="h-10 w-1/6" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-16 lg:gap-24">
+      <div className="flex flex-col w-full px-32">
         {Array.from({ length: 2 }).map((_, i) => (
           <CardSkeleton key={i} />
         ))}
