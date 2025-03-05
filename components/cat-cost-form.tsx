@@ -35,10 +35,9 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
   
   const { register, handleSubmit, control, formState: { errors }, } = useForm<CatCostFormValues>({
     resolver: zodResolver(catCostSchema),
-    defaultValues: { insurance: false },
+    defaultValues: { insurance: false, lifeStage: "Kitten", sex: "Male", lifestyle: "Indoor" },
   });
 
-  // Show skeleton loader during initial render to prevent layout shift
   if (!isClient) {
     return <FormSkeletonLoader />;
   }
@@ -52,13 +51,17 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Life Stage Selection */}
           <div className="space-y-2">
-            <label htmlFor="lifeStage" hidden className="font-medium text-secondary">Life Stage</label>
+            <div className="flex items-center gap-1">
+              <label htmlFor="lifeStage" className="font-medium text-secondary">Life Stage</label>
+              <InfoTooltip content={{ text: "Kitten (0-1 year), Adult (1-7 years), Senior (8+ years). Different life stages have different care requirements and costs." }}>
+                <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+              </InfoTooltip>
+            </div>
             <Controller
               name="lifeStage"
               control={control}
               render={({ field }) => (
                 <Select {...field} id="lifeStage" aria-describedby="lifeStage-error" title="Life Stage">
-                  <SelectItem value="">Select life stage</SelectItem>
                   <SelectItem value="Kitten">Kitten</SelectItem>
                   <SelectItem value="Adult">Adult</SelectItem>
                   <SelectItem value="Senior">Senior</SelectItem>
@@ -70,13 +73,12 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
 
           {/* Sex Selection */}
           <div className="space-y-2">
-            <label htmlFor="sex" hidden className="font-medium text-secondary">Sex</label>
+            <label htmlFor="sex" className="font-medium text-secondary">Sex</label>
             <Controller
               name="sex"
               control={control}
               render={({ field }) => (
                 <Select {...field} id="sex" aria-describedby="sex-error" title="Sex">
-                  <SelectItem value="">Select sex</SelectItem>
                   <SelectItem value="Male">Male</SelectItem>
                   <SelectItem value="Female">Female</SelectItem>
                 </Select>
@@ -87,13 +89,12 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
 
           {/* Lifestyle Selection */}
           <div className="space-y-2">
-            <label htmlFor="lifestyle" hidden className="font-medium text-secondary">Lifestyle</label>
+            <label htmlFor="lifestyle" className="font-medium text-secondary">Lifestyle</label>
             <Controller
               name="lifestyle"
               control={control}
               render={({ field }) => (
                 <Select {...field} id="lifestyle" aria-describedby="lifestyle-error" title="Lifestyle">
-                  <SelectItem value="">Select lifestyle</SelectItem>
                   <SelectItem value="Indoor">Indoor</SelectItem>
                   <SelectItem value="Outdoor">Outdoor</SelectItem>
                 </Select>
@@ -111,8 +112,8 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               className="w-5 h-5" 
             />
             <label htmlFor="insurance" className="font-medium text-secondary">Add Insurance?</label>
-            <InfoTooltip content="Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!">
-              <InfoIcon className="w-5 h-5 text-secondary" />
+            <InfoTooltip content={{ text: "Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!" }}>
+              <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
             </InfoTooltip>
           </div>
 

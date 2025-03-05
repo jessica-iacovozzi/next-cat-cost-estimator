@@ -49,6 +49,10 @@ async function getSterilizationCost(lifeStageId: number, sex: 'Male' | 'Female')
 export interface AnnualExpenseBreakdown {
   name: string;
   cost: number;
+  tooltip?: {
+    text: string;
+    link?: string;
+  }[];
 }
 
 export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promise<AnnualExpenseBreakdown[]> {
@@ -59,7 +63,7 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
     // Get all expenses
     const { data: expenses, error: expensesError } = await supabase
       .from('expenses')
-      .select('id, name');
+      .select('id, name, tooltip');
 
     if (expensesError || !expenses) throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
 
@@ -98,7 +102,8 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
 
       breakdown.push({
         name: expense.name,
-        cost
+        cost,
+        tooltip: expense.tooltip
       });
     }
 

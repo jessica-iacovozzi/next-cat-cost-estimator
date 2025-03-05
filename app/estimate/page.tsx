@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { CatCostFormValues } from "@/components/cat-cost-form";
 import { useUser } from "@/hooks/useUser";
 import { BreakdownSkeletonLoader } from "@/components/ui/skeleton";
+import InfoTooltip from "@/components/ui/info-tooltip";
+import { InfoIcon } from "lucide-react";
 
 export default function Estimate() {
   const [breakdown, setBreakdown] = useState<AnnualExpenseBreakdown[]>([]);
@@ -126,8 +128,13 @@ export default function Estimate() {
                   .map((item) => (
                   <tr key={item.name}>
                       <td className="p-3 border-b border-slate-200">
-                      <p className="block text-sm text-slate-800">
+                      <p className="block text-sm text-slate-800 flex items-center gap-1">
                           {item.name}
+                          {item.tooltip && item.tooltip.length > 0 && (
+                            <InfoTooltip content={item.tooltip}>
+                              <InfoIcon className="h-4 w-4 text-slate-500" />
+                            </InfoTooltip>
+                          )}
                       </p>
                       </td>
                       <td className="p-3 border-b border-slate-200 text-center">

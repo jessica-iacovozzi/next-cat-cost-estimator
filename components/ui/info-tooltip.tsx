@@ -3,7 +3,21 @@
 import * as React from "react";
 import { Tooltip } from "radix-ui";
 
-const InfoTooltip = ({ content, children }: { content: string; children: React.ReactNode }) => {
+interface TooltipItem {
+  text: string;
+  link?: string;
+}
+
+const InfoTooltip = ({ 
+  content, 
+  children 
+}: { 
+  content: TooltipItem[] | TooltipItem; 
+  children: React.ReactNode 
+}) => {
+  // Ensure content is always an array for consistent rendering
+  const tooltipItems = Array.isArray(content) ? content : [content];
+
 	return (
 		<Tooltip.Provider>
 			<Tooltip.Root>
@@ -14,7 +28,25 @@ const InfoTooltip = ({ content, children }: { content: string; children: React.R
 						sideOffset={5}
 						side="right"
 					>
-						{content}
+						<div className="space-y-3">
+              {tooltipItems.map((item, index) => (
+                <div key={index} className={index > 0 ? "pt-2 border-t border-gray-700" : ""}>
+                  <p>{item.text}</p>
+                  {item.link && (
+                    <div className="mt-1">
+                      <a 
+                        href={item.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-400 underline text-sm"
+                      >
+                        Learn more
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 						<Tooltip.Arrow className="fill-white" />
 					</Tooltip.Content>
 				</Tooltip.Portal>
@@ -24,4 +56,3 @@ const InfoTooltip = ({ content, children }: { content: string; children: React.R
 };
 
 export default InfoTooltip;
-
