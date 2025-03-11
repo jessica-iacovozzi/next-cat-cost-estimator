@@ -17,7 +17,7 @@ const catCostSchema = z.object({
   lifeStage: z.enum(["Kitten", "Adult", "Senior"], {
     errorMap: () => ({ message: "Please select a life stage." }),
   }),
-  sex: z.enum(["Male", "Female"], {
+  sex: z.enum(["Male", "Male Neutered", "Female", "Female Spayed"], {
     errorMap: () => ({ message: "Please select a sex." }),
   }),
   lifestyle: z.enum(["Indoor", "Outdoor"], {
@@ -95,7 +95,9 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               render={({ field }) => (
                 <Select {...field} id="sex" aria-describedby="sex-error" title="Sex">
                   <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Male Neutered">Male (Neutered)</SelectItem>
                   <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Female Spayed">Female (Spayed)</SelectItem>
                 </Select>
               )}
             />

@@ -35,11 +35,46 @@ async function getLifeStageId(lifeStage: string) {
   return data.id;
 }
 
-async function getSterilizationCost(lifeStageId: number, sex: 'Male' | 'Female') {
+async function getSexId(sex: string) {
+  let name: string;
+  let isFixed: boolean;
+  
+  if (sex === 'Male' || sex === 'Female') {
+    name = sex;
+    isFixed = false;
+  } else if (sex === 'Male Neutered') {
+    name = 'Male';
+    isFixed = true;
+  } else if (sex === 'Female Spayed') {
+    name = 'Female';
+    isFixed = true;
+  } else {
+    throw new Error(`Invalid sex: ${sex}`);
+  }
+  
+  const { data, error } = await supabase
+    .from('sexes')
+    .select('id')
+    .match({ name, is_fixed: isFixed })
+    .single();
+
+  console.log(data);
+
+  if (error || !data) throw new Error(`Sex not found: ${sex}`);
+  return data.id;
+}
+
+async function getSterilizationCost(sex: string) {
+  if (sex === 'Male Neutered' || sex === 'Female Spayed') {
+    return 0;
+  }
+  
+  const sexId = await getSexId(sex);
+  
   const { data, error } = await supabase
     .from('sterilization_costs')
     .select('cost')
-    .match({ life_stage_id: lifeStageId, sex })
+    .eq('sex_id', sexId)
     .single();
 
   if (error || !data) throw new Error('Sterilization cost not found');
@@ -60,32 +95,29 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
     const { lifeStage, sex, lifestyle, insurance } = data;
     const lifeStageId = await getLifeStageId(lifeStage);
     
-    // Get all expenses
     const { data: expenses, error: expensesError } = await supabase
       .from('expenses')
       .select('id, name, tooltip');
 
     if (expensesError || !expenses) throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
 
+    console.log(expenses);
     const breakdown: AnnualExpenseBreakdown[] = [];
 
     for (const expense of expenses) {
       let cost = 0;
 
-      // Handle sterilization cost
       if (expense.name.toLowerCase().includes('sterilization')) {
-        if (lifeStage === 'Kitten') {
-          cost = await getSterilizationCost(lifeStageId, sex);
-        } else {
-          continue; // Skip sterilization for non-kittens
+        cost = await getSterilizationCost(sex);
+        
+        if (cost === 0) {
+          continue;
         }
       }
-      // Handle insurance
       else if (expense.name === 'Insurance program (basic)') {
         if (!insurance) continue;
         cost = await getAnnualInsuranceCost(lifeStageId, lifestyle, expense.id);
       }
-      // Regular annual costs
       else {
         const { data: annualCost } = await supabase
           .from('annual_costs')
@@ -115,10 +147,14 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
 }
 
 export function generateEstimateName(formData: CatCostFormValues): string {
+  let sexDisplay = formData.sex;
+  
+  const catDetails = `${sexDisplay} ${formData.lifestyle} ${formData.lifeStage}${formData.lifeStage === 'Kitten' ? '' : ' Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
+  
   if (formData.name === '') {
-    return `${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''}`;
+    return catDetails;
   }
-  return `${formData.name} ( ${formData.sex} ${formData.lifestyle} ${formData.lifeStage} ${formData.lifeStage === 'Kitten' ? ' ' : 'Cat'} ${formData.insurance ? 'with Insurance' : ''})`;
+  return `${formData.name} - ${catDetails}`;
 }
 
 export async function createUserEstimate(estimateName: string) {
