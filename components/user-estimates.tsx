@@ -191,7 +191,7 @@ export default function UserEstimates() {
                 </Button>
             </Link>
         </div>
-        <div className="flex flex-col gap-16 lg:gap-24 w-full lg:mx-32">
+        <div className="flex flex-col gap-8 lg:gap-16 w-full lg:mx-32">
         {estimates.map((estimate, index) => (
             <div key={index} className="flex">
                 <Dialog open={activeEstimateIndex === index} onOpenChange={(open) => {

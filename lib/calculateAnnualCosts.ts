@@ -58,8 +58,6 @@ async function getSexId(sex: string) {
     .match({ name, is_fixed: isFixed })
     .single();
 
-  console.log(data);
-
   if (error || !data) throw new Error(`Sex not found: ${sex}`);
   return data.id;
 }
@@ -101,7 +99,6 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
 
     if (expensesError || !expenses) throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
 
-    console.log(expenses);
     const breakdown: AnnualExpenseBreakdown[] = [];
 
     for (const expense of expenses) {
