@@ -183,8 +183,8 @@ export default function UserEstimates() {
 
     if (estimates.length > 0) return (
         <>
-        <div className="flex justify-between w-full lg:mx-24">
-            <h1 className="text-3xl flex-1 font-bold">My Custom Estimates</h1>
+        <div className="flex flex-col gap-4 md:flex-row justify-between w-full lg:mx-24">
+            <h1 className="text-xl md:text-3xl flex-1 font-bold">My Custom Estimates</h1>
             <Link href="/estimate">
                 <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
                     Create new estimate
@@ -209,16 +209,16 @@ export default function UserEstimates() {
                     </DialogContent>
                 </Dialog>
                 <Card className="flex-1 w-full shadow-md rounded-xl flex flex-col h-full">
-                <CardHeader className="flex justify-between items-center">
-                    <div>
-                        <CardTitle className="px-3">{estimateNames[index]}</CardTitle>
+                <CardHeader className="flex flex-col">
+                    <div className="flex items-center mb-2 md:mb-0 md:justify-between">
+                        <CardTitle className="px-3 w-2/3 md:w-auto">{estimateNames[index]}</CardTitle>
+                        <Button className="w-1/3 md:w-40" aria-label="Add expense" onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
+                    </div>
                         <CardDescription className="px-3">
                             Created {estimateDates[index]}
                             <br />
                             Updated {estimateUpdateDates[index]}
                         </CardDescription>
-                    </div>
-                    <Button aria-label="Add expense" onClick={() => setActiveEstimateIndex(index)}>Add expense</Button>
                 </CardHeader>
                 <CardContent className="text-secondary flex-1 flex flex-col justify-between">
                     <table className="w-full text-left table-auto">
@@ -362,7 +362,7 @@ export default function UserEstimates() {
                     </table>
                     <Button
                         aria-label="Delete estimate"
-                        className="w-full mt-4 bg-red-500 hover:bg-red-600" 
+                        className="w-full bg-red-500 hover:bg-red-600" 
                         onClick={async () => {
                             setIsLoading(true);
                             try {
@@ -396,6 +396,16 @@ export default function UserEstimates() {
     );
 
     return (
+        <>
+        <div className="flex flex-col gap-4 md:flex-row justify-between w-full lg:mx-24">
+            <h1 className="text-xl md:text-3xl flex-1 font-bold">My Custom Estimates</h1>
+            <Link href="/estimate">
+                <Button aria-label="Create new estimate" variant="destructive" onClick={() => {localStorage.removeItem("catCostBreakdown")}}>
+                    Create new estimate
+                </Button>
+            </Link>
+        </div>
         <p className="text-muted-foreground font-semibold">No estimates found</p>
+        </>
     );
 }

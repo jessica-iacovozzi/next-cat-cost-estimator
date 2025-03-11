@@ -39,7 +39,7 @@ export default function RootLayout({
         >
           <ToastContextProvider>
             <main className="min-h-screen flex flex-col items-center">
-              <div className="flex-1 w-full flex flex-col gap-20 items-center justify-between">
+              <div className="flex-1 w-full flex flex-col gap-12 md:gap-20 items-center justify-between">
                 <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                   <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                     <div className="flex gap-5 items-center font-semibold">
@@ -48,7 +48,7 @@ export default function RootLayout({
                     {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                   </div>
                 </nav>
-                <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row justify-center">
+                <div className="w-96 md:w-full max-w-8xl mx-auto flex-1 flex flex-col md:flex-row md:justify-center">
                   {children}
                 </div>
                 <Footer />

@@ -16,7 +16,7 @@ export default async function Estimates(props: {
           </div>
         }
         {!searchParams.estimateId && 
-        <div className="flex flex-wrap justify-center gap-16">
+        <div className="flex flex-wrap justify-center gap-8 md:gap-16 h-full">
           <UserEstimates />
         </div>
         }

@@ -81,45 +81,47 @@ export default function Estimate() {
   };
 
   return (
-    <div className="flex flex-col gap-20 items-center p-6">
+    <div className="flex flex-col gap-12 md:gap-20 items-center p-6">
       <CatCostForm onSubmit={handleSubmit} />
 
       {loading ? (
         <BreakdownSkeletonLoader />
       ) : breakdown.length > 0 ? (
         <Card className="flex-1 w-full shadow-md rounded-xl">
-          <CardHeader className="flex justify-between items-center">
-            <div>
-              <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
-              <CardDescription className="px-3">{estimateName}</CardDescription>
-            </div>
+          <CardHeader className="flex flex-col">
+            <div className="flex">
+              <CardTitle className="px-3 w-2/3">Estimated Annual Cost Breakdown</CardTitle>
             {user ? (
               <Button 
-                aria-label="Customize Estimate" 
-                onClick={async () => {
-                  if (!estimateCreated) {
-                    setEstimateCreated(true);
-                    const { id } = await createUserEstimate(estimateName);
-                    router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
-                  } else {
-                    router.push('/protected/estimates');
-                  }
-                }}
+              aria-label="Customize Estimate"
+              className="w-1/3"
+              onClick={async () => {
+                if (!estimateCreated) {
+                  setEstimateCreated(true);
+                  const { id } = await createUserEstimate(estimateName);
+                  router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
+                } else {
+                  router.push('/protected/estimates');
+                }
+              }}
               >
                 Customize
               </Button>
             ) : (
               <Button 
-                aria-label="Sign in to customize estimate" 
-                variant="outline" 
-                onClick={() => {
-                  localStorage.setItem('pendingCatCostFormData', JSON.stringify(formData));
-                  router.push('/sign-in?returnTo=/estimate');
-                }}
+              aria-label="Sign in to customize estimate" 
+              className="w-1/3 text-wrap h-auto"
+              variant="outline" 
+              onClick={() => {
+                localStorage.setItem('pendingCatCostFormData', JSON.stringify(formData));
+                router.push('/sign-in?returnTo=/estimate');
+              }}
               >
                 Sign in to customize
               </Button>
             )}
+            </div>
+            <CardDescription className="px-3 py-1">{estimateName}</CardDescription>
           </CardHeader>
           <CardContent className="text-secondary">
             <table className="w-full text-left table-auto">

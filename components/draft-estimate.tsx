@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dial
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import CustomExpenseForm from "./custom-expense-form";
 import { useRouter } from "next/navigation";
-import { Trash2, Info as InfoIcon, GripHorizontal, Pencil, Check } from "lucide-react";
+import { Trash2, Info as InfoIcon, GripHorizontal, Pencil, Check, X } from "lucide-react";
 import { useToast } from "./ui/toast-context";
 import { Spinner } from "./ui/spinner";
 import InfoTooltip from "./ui/info-tooltip";
@@ -156,18 +156,28 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
         <div className="grid grid-cols-1 w-full">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent aria-describedby="Custom Expense Creation Form">
-                <DialogTitle>Custom Expense</DialogTitle>
+                <div className="flex">
+                    <DialogTitle>Custom Expense</DialogTitle>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="ml-auto"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
                 <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
                 <CustomExpenseForm onSubmit={handleCreateExpense} />
             </DialogContent>
         </Dialog>
         <Card className="flex-1 w-full min-w-fit shadow-md rounded-xl">
-          <CardHeader className="flex justify-between items-center">
-            <div>
-                <CardTitle className="px-3">Estimated Annual Cost Breakdown</CardTitle>
-                <CardDescription className="px-3">{estimateName}</CardDescription>
+          <CardHeader className="flex flex-col">
+            <div className="flex">
+                <CardTitle className="px-3 w-2/3">Estimated Annual Cost Breakdown</CardTitle>
+                <Button className="w-1/3" aria-label="Add expense" onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
             </div>
-            <Button aria-label="Add expense" onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
+            <CardDescription className="px-3 py-1">{estimateName}</CardDescription>
           </CardHeader>
           <CardContent className="text-secondary">
             <table className="w-full text-left table-auto">
@@ -306,7 +316,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
             </table>
             <Button
                 aria-label="Save draft estimate"
-                className="w-full mt-4" 
+                className="w-full mt-2" 
                 variant="destructive"
                 onClick={async () => {
                 setIsLoading(true);
@@ -343,7 +353,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
             
             <Button
                 aria-label="Delete draft estimate"
-                className="w-full mt-4"
+                className="w-full mt-3"
                 variant="default"
                 onClick={async () => {
                 setIsLoading(true);

@@ -8,7 +8,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "h-5 w-full animate-pulse rounded-md bg-muted/60",
+        "h-5 w-full animate-pulse rounded-md bg-muted",
         className
       )}
     />
@@ -50,11 +50,11 @@ export function CardSkeleton() {
 export function EstimatesSkeletonLoader() {
   return (
     <div className="flex flex-col justify-center w-full">
-      <div className="flex justify-between w-full px-24">
-        <Skeleton className="h-8 w-1/4 mb-12" />
-        <Skeleton className="h-10 w-1/6" />
+      <div className="flex flex-col md:flex-row mb-4 justify-between w-full md:px-24">
+        <Skeleton className="h-8 w-1/2 md:w-1/4 mb-4 md:mb-12" />
+        <Skeleton className="h-10 w-1/3 md:w-1/6" />
       </div>
-      <div className="flex flex-col w-full px-32">
+      <div className="flex flex-col w-full md:px-32">
         {Array.from({ length: 2 }).map((_, i) => (
           <CardSkeleton key={i} />
         ))}
