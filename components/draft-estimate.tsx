@@ -236,7 +236,7 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
                                 />
                                 {item.tooltip && item.tooltip.length > 0 && (
                                     <InfoTooltip content={item.tooltip}>
-                                        <InfoIcon className="h-4 w-4 text-slate-500" />
+                                        <InfoIcon size={16} className="text-muted-foreground cursor-help" />
                                     </InfoTooltip>
                                 )}
                             </div>

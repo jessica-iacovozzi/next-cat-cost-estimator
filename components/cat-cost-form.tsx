@@ -69,7 +69,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
             <div className="flex items-center gap-1">
               <label htmlFor="lifeStage" className="font-medium text-secondary">Life Stage</label>
               <InfoTooltip content={{ text: "Kitten (0-1 year), Adult (1-7 years), Senior (8+ years). Different life stages have different care requirements and costs." }}>
-                <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                <InfoIcon size={16} className="text-muted-foreground cursor-help" />
               </InfoTooltip>
             </div>
             <Controller
@@ -130,7 +130,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
             />
             <label htmlFor="insurance" className="font-medium text-secondary">Add Insurance?</label>
             <InfoTooltip content={{ text: "Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!" }}>
-              <InfoIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+              <InfoIcon size={16} className="text-muted-foreground cursor-help" />
             </InfoTooltip>
           </div>
 
