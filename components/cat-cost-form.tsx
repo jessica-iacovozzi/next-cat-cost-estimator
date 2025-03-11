@@ -58,7 +58,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="name"
               control={control}
               render={({ field }) => (
-                <Input {...field} id="name" aria-describedby="name-error" title="Name" />
+                <Input {...field} id="name" aria-describedby="name-error" title="Name" placeholder="Bella" className="placeholder:text-muted-foreground" />
               )}
             />
             {errors.name && <p id="name-error" className="text-red-500 text-sm">{errors.name.message}</p>}
