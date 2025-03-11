@@ -6,7 +6,7 @@ import CustomExpenseForm from "./custom-expense-form";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { Button } from "./ui/button";
-import { Trash2, GripHorizontal, Pencil, Check, DollarSign } from "lucide-react";
+import { Trash2, GripHorizontal, Pencil, Check, DollarSign, X } from "lucide-react";
 import { EstimatesSkeletonLoader } from "./ui/skeleton";
 import Link from "next/link";
 
@@ -200,7 +200,17 @@ export default function UserEstimates() {
                     }
                 }}>
                     <DialogContent aria-describedby="Custom Expense Creation Form">
-                        <DialogTitle>Custom Expense</DialogTitle>
+                        <div className="flex">
+                            <DialogTitle>Custom Expense</DialogTitle>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="ml-auto"
+                                onClick={() => setActiveEstimateIndex(null)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
                         <DialogDescription>Create a custom expense for this estimate.</DialogDescription>
                         <CustomExpenseForm onSubmit={(formData) => handleCreateExpense({ 
                                 ...formData, 
