@@ -11,7 +11,7 @@ export default async function Estimates(props: {
   return (
     <div className="w-full">
         {searchParams.estimateId && 
-          <div className="flex justify-center w-full lg:w-1/2 mx-auto">
+          <div className="flex justify-center mx-24">
             <DraftEstimate estimateId={searchParams.estimateId as string} estimateName={searchParams.estimateName as string} />
           </div>
         }

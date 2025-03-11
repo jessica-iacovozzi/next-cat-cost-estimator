@@ -173,9 +173,9 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
         </Dialog>
         <Card className="flex-1 w-full min-w-fit shadow-md rounded-xl">
           <CardHeader className="flex flex-col">
-            <div className="flex">
-                <CardTitle className="px-3 w-2/3">Estimated Annual Cost Breakdown</CardTitle>
-                <Button className="w-1/3" aria-label="Add expense" onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
+            <div className="flex md:justify-between">
+                <CardTitle className="px-3 w-2/3 md:w-auto">Estimated Annual Cost Breakdown</CardTitle>
+                <Button className="w-1/3 md:w-40" aria-label="Add expense" onClick={isOpen ? () => setIsOpen(false) : () => setIsOpen(true)}>Add expense</Button>
             </div>
             <CardDescription className="px-3 py-1">{estimateName}</CardDescription>
           </CardHeader>
