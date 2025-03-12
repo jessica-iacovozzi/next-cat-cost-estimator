@@ -28,7 +28,7 @@ const InfoTooltip = ({
 				</Tooltip.Trigger>
 				<Tooltip.Portal>
 					<Tooltip.Content
-						className="select-none w-96 rounded bg-secondary-foreground px-[15px] py-2.5 text-[15px] leading-none text-secondary"
+						className="select-none w-96 rounded border bg-secondary-foreground px-[15px] py-2.5 text-[15px] leading-none text-secondary"
 					>
 						<div className="space-y-3">
 							{tooltipItems.map((item, index) => (
