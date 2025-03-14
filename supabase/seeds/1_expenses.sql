@@ -1,6 +1,5 @@
 INSERT INTO expenses(name, tooltip)
 VALUES
-  ('Sterilization', null),
   ('Medical consultation and health check-up (3 visits)', null),
   ('Vaccines (excluding health check-up)', json '[{ "text": "According to the Ordre des médecins vétérinaires du Québec (OMVQ), a vaccination must be preceded by a complete physical examination by the veterinarian (Code of Ethics of Veterinarians, section II, article 9, paragraph 3).", "link": "https://www.cvetc.com/en-ca/resources/vaccination-guide-for-cats" }]'),
   ('Fecal exam', null),
@@ -22,4 +21,5 @@ VALUES
   ('Dental X-rays', json '[{ "text": "Dental care needs will vary greatly depending on your pet''s breed and genetics. They can be performed every 1 to 2 years, depending on the individual patient."}]'),
   ('Medical consultation and health check-up (2 per year)', null),
   ('High-quality dry food +/- dietary supplements', null),
-  ('Geriatric blood test', null);
+  ('Geriatric blood test', null),
+  ('Sterilization', null);
