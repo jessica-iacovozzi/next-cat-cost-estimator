@@ -45,8 +45,6 @@ export default function DraftEstimate({ estimateId, estimateName }: DraftEstimat
               cost: expense.cost
             });
           });
-          
-          localStorage.removeItem("catCostBreakdown");
         }
         setIsLoading(false);
       }, []);
