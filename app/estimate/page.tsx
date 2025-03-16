@@ -18,11 +18,19 @@ export default function Estimate() {
   const [formData, setFormData] = useState<CatCostFormValues | null>(null);
   const [estimateCreated, setEstimateCreated] = useState(false); 
   const [estimateName, setEstimateName] = useState<string>("");
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const estimateRef = useRef<HTMLDivElement>(null);
 
   const { user } = useUser();
 
   const router = useRouter();
+
+  useEffect(() => {
+    const storedFormData = localStorage.getItem('pendingCatCostFormData');
+    if (storedFormData && user) {
+      setIsRedirecting(true);
+    }
+  }, [user]);
 
   useEffect(() => {
     const storedFormData = localStorage.getItem('pendingCatCostFormData');
@@ -42,6 +50,7 @@ export default function Estimate() {
       } catch (error) {
         console.error('Error parsing stored form data:', error);
         localStorage.removeItem('pendingCatCostFormData');
+        setIsRedirecting(false);
       }
     }
   }, [user, router, estimateCreated]);
@@ -90,99 +99,111 @@ export default function Estimate() {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col lg:flex-row lg:gap-8 items-start">
-        <div className="w-full lg:w-1/2 mb-8 lg:mb-0 lg:sticky lg:top-24">
-          <CatCostForm onSubmit={handleSubmit} />
+    <>
+      {isRedirecting ? (
+        <div className="container mx-auto px-4 flex items-center justify-center min-h-[70vh]">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] mb-4"></div>
+            <p className="text-muted-foreground">Creating your estimate...</p>
+          </div>
         </div>
-        
-        {/* Estimate section */}
-        <div className="w-full lg:w-1/2" ref={estimateRef}>
-          {loading ? (
-            <BreakdownSkeletonLoader />
-          ) : breakdown.length > 0 ? (
-            <Card className="w-full shadow-md rounded-xl">
-              <CardHeader className="flex flex-col">
-                <div className="flex">
-                  <CardTitle className="px-3 w-2/3">Estimated Annual Cost Breakdown</CardTitle>
-                  {user ? (
-                    <Button 
-                      aria-label="Customize Estimate"
-                      className="w-1/3"
-                      onClick={async () => {
-                        if (!estimateCreated) {
-                          setEstimateCreated(true);
-                          const { id } = await createUserEstimate(estimateName);
-                          router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
-                        } else {
-                          router.push('/protected/estimates');
-                        }
-                      }}
-                    >
-                      Customize
-                    </Button>
-                  ) : (
-                    <Button 
-                      aria-label="Sign in to customize estimate" 
-                      className="sm:w-1/3 text-wrap h-auto"
-                      variant="outline" 
-                      onClick={() => {
-                        localStorage.setItem('pendingCatCostFormData', JSON.stringify(formData));
-                        router.push('/sign-in?returnTo=/estimate');
-                      }}
-                    >
-                      Sign in to customize
-                    </Button>
-                  )}
-                </div>
-                <CardDescription className="px-3 py-1">{estimateName}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-secondary">
-                <table className="w-full text-left table-auto">
-                  <tbody>
-                  {breakdown
-                      .map((item) => (
-                      <tr key={item.name}>
-                          <td className="p-3 border-b border-slate-200">
-                          <p className="block text-sm text-slate-800 flex items-center gap-1">
-                              {item.name}
-                              {item.tooltip && item.tooltip.length > 0 && (
-                                <InfoTooltip content={item.tooltip}>
-                                  <InfoIcon size={16} className="text-muted-foreground cursor-help" />
-                                </InfoTooltip>
-                              )}
-                          </p>
+      ) : (
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row lg:gap-8 items-start">
+            <div className="w-full lg:w-1/2 mb-8 lg:mb-0 lg:sticky lg:top-24">
+              <CatCostForm onSubmit={handleSubmit} />
+            </div>
+            
+            {/* Estimate section */}
+            <div className="w-full lg:w-1/2" ref={estimateRef}>
+              {loading ? (
+                <BreakdownSkeletonLoader />
+              ) : breakdown.length > 0 ? (
+                <Card className="w-full shadow-md rounded-xl">
+                  <CardHeader className="flex flex-col">
+                    <div className="flex">
+                      <CardTitle className="px-3 w-2/3">Estimated Annual Cost Breakdown</CardTitle>
+                      {user ? (
+                        <Button 
+                          aria-label="Customize Estimate"
+                          className="w-1/3"
+                          onClick={async () => {
+                            if (!estimateCreated) {
+                              setEstimateCreated(true);
+                              const { id } = await createUserEstimate(estimateName);
+                              router.push(`/protected/estimates?estimateId=${id}&estimateName=${estimateName}`);
+                            } else {
+                              router.push('/protected/estimates');
+                            }
+                          }}
+                        >
+                          Customize
+                        </Button>
+                      ) : (
+                        <Button 
+                          aria-label="Sign in to customize estimate" 
+                          className="sm:w-1/3 text-wrap h-auto"
+                          variant="outline" 
+                          onClick={() => {
+                            localStorage.setItem('pendingCatCostFormData', JSON.stringify(formData));
+                            setIsRedirecting(true);
+                            router.push('/sign-in?returnTo=/estimate');
+                          }}
+                        >
+                          Sign in to customize
+                        </Button>
+                      )}
+                    </div>
+                    <CardDescription className="px-3 py-1">{estimateName}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-secondary">
+                    <table className="w-full text-left table-auto">
+                      <tbody>
+                      {breakdown
+                          .map((item) => (
+                          <tr key={item.name}>
+                              <td className="p-3 border-b border-slate-200">
+                              <p className="block text-sm text-slate-800 flex items-center gap-1">
+                                  {item.name}
+                                  {item.tooltip && item.tooltip.length > 0 && (
+                                    <InfoTooltip content={item.tooltip}>
+                                      <InfoIcon size={16} className="text-muted-foreground cursor-help" />
+                                    </InfoTooltip>
+                                  )}
+                              </p>
+                              </td>
+                              <td className="p-3 border-b border-slate-200 text-center">
+                              <p className="block text-sm text-slate-800">
+                                  {item.cost}$
+                              </p>
+                              </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                      <tr>
+                          <td className="p-4 text-left font-bold text-red-600 border-t border-slate-300">
+                          Total:
                           </td>
-                          <td className="p-3 border-b border-slate-200 text-center">
-                          <p className="block text-sm text-slate-800">
-                              {item.cost}$
-                          </p>
+                          <td className="p-4 font-semibold text-red-600 border-t border-slate-300">
+                          {breakdown.reduce((acc, item) => acc + item.cost, 0)}$
                           </td>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                  <tr>
-                      <td className="p-4 text-left font-bold text-red-600 border-t border-slate-300">
-                      Total:
-                      </td>
-                      <td className="p-4 font-semibold text-red-600 border-t border-slate-300">
-                      {breakdown.reduce((acc, item) => acc + item.cost, 0)}$
-                      </td>
-                  </tr>
-                  </tfoot>
-                </table>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="hidden lg:flex lg:h-full lg:items-center lg:justify-center lg:p-12">
-              <p className="text-muted-foreground text-center">
-                Fill out the form to see your cat's estimated annual cost breakdown.
-              </p>
+                      </tfoot>
+                    </table>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="hidden lg:flex lg:h-full lg:items-center lg:justify-center lg:p-12">
+                  <p className="text-muted-foreground text-center">
+                    Fill out the form to see your cat's estimated annual cost breakdown.
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
