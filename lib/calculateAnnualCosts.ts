@@ -18,7 +18,23 @@ async function getAnnualInsuranceCost(
       expense_id: expenseId,
       lifestyle: lifestyle
     })
-    .single();
+    .maybeSingle();
+
+  // If outdoor lifestyle has no data, fall back to indoor
+  if ((error || !data) && lifestyle === 'Outdoor') {
+    const { data: indoorData, error: indoorError } = await supabase
+      .from('annual_costs')
+      .select('cost')
+      .match({
+        life_stage_id: lifeStageId,
+        expense_id: expenseId,
+        lifestyle: 'Indoor'
+      })
+      .single();
+    
+    if (indoorError || !indoorData) throw new Error('No annual cost found for insurance program');
+    return indoorData.cost;
+  }
 
   if (error || !data) throw new Error('No annual cost found for insurance program');
   return data.cost;
@@ -116,6 +132,7 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
         cost = await getAnnualInsuranceCost(lifeStageId, lifestyle, expense.id);
       }
       else {
+        // First try to get the cost for the specified lifestyle
         const { data: annualCost } = await supabase
           .from('annual_costs')
           .select('cost')
@@ -126,7 +143,22 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
           })
           .maybeSingle();
 
-        cost = annualCost?.cost || 0;
+        if (!annualCost && lifestyle === 'Outdoor') {
+          // Fall back to indoor lifestyle if outdoor cost not found
+          const { data: indoorCost } = await supabase
+            .from('annual_costs')
+            .select('cost')
+            .match({
+              life_stage_id: lifeStageId,
+              expense_id: expense.id,
+              lifestyle: 'Indoor'
+            })
+            .maybeSingle();
+          
+          cost = indoorCost?.cost || 0;
+        } else {
+          cost = annualCost?.cost || 0;
+        }
       }
 
       breakdown.push({
