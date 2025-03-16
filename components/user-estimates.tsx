@@ -383,12 +383,30 @@ export default function UserEstimates() {
                                     return;
                                 }
                                 
+                                // Optimistically update UI by removing this estimate from the state
+                                setEstimates(prev => prev.filter(est => est[0]?.user_estimate_id !== user_estimate_id));
+                                setEstimateNames(prev => {
+                                    const newNames = [...prev];
+                                    newNames.splice(index, 1);
+                                    return newNames;
+                                });
+                                setEstimateDates(prev => {
+                                    const newDates = [...prev];
+                                    newDates.splice(index, 1);
+                                    return newDates;
+                                });
+                                setEstimateUpdateDates(prev => {
+                                    const newDates = [...prev];
+                                    newDates.splice(index, 1);
+                                    return newDates;
+                                });
+                                
                                 await deleteExpenses(user_estimate_id);
                                 await deleteEstimate(user_estimate_id);
-                                
-                                setRefreshTrigger(prev => prev + 1);
                             } catch (error) {
                                 console.error('Error deleting custom estimate:', error);
+                                // If there was an error, refresh to get the correct state
+                                setRefreshTrigger(prev => prev + 1);
                             } finally {
                                 setIsLoading(false);
                             }
