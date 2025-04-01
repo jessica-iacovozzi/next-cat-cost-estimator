@@ -7,7 +7,7 @@ export function useUser() {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const supabase = await createClient();
+            const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
         };
