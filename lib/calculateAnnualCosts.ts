@@ -164,8 +164,10 @@ export async function getAnnualExpenseBreakdown(data: CatCostFormValues): Promis
       breakdown.push({
         name: expense.name,
         cost,
-        tooltip: expense.tooltip
-      });
+        tooltip: Array.isArray(expense.tooltip) 
+  ? expense.tooltip as { text: string; link?: string }[]
+  : undefined      
+});
     }
 
     return breakdown.filter(item => item.cost > 0);

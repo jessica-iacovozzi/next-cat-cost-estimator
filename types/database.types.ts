@@ -135,7 +135,7 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          name: string | null
+          name: string
           updated_at: string
           user_id: string
         }
@@ -159,7 +159,7 @@ export type Database = {
         Row: {
           cost: number
           id: number
-          name: string | null
+          name: string
           order: number
           user_estimate_id: number
         }
