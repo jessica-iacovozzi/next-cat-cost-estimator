@@ -62,7 +62,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
                 <Input {...field} id="name" labelledBy="name-label" describedBy={`${errors.name ? " name-error" : "name-help"}`} aria-invalid={errors.name ? "true" : "false"} aria-label="Name of Cat" title="Name" placeholder="Bella" className="placeholder:text-muted-foreground" />
               )}
             />
-            {errors.name && <p id="name-error" className="text-red-500 text-sm">{errors.name.message}</p>}
+            {errors.name && <p id="name-error" role="alert" className="text-red-500 text-sm">{errors.name.message}</p>}
             <p id="name-help" className="sr-only">Enter the name of your cat.</p>
           </div>
 
@@ -85,7 +85,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
                 </Select>
               )}
             />
-            {errors.lifeStage && <p id="lifeStage-error" className="text-red-500 text-sm">{errors.lifeStage.message}</p>}
+            {errors.lifeStage && <p id="lifeStage-error" role="alert" className="text-red-500 text-sm">{errors.lifeStage.message}</p>}
             <p id="lifeStage-help" className="sr-only">Select the life stage of your cat.</p>
           </div>
 
@@ -104,7 +104,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
                 </Select>
               )}
             />
-            {errors.sex && <p id="sex-error" className="text-red-500 text-sm">{errors.sex.message}</p>}
+            {errors.sex && <p id="sex-error" role="alert" className="text-red-500 text-sm">{errors.sex.message}</p>}
             <p id="sex-help" className="sr-only">Select the sex of your cat.</p>
           </div>
 
@@ -121,7 +121,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
                 </Select>
               )}
             />
-            {errors.lifestyle && <p id="lifestyle-error" className="text-red-500 text-sm">{errors.lifestyle.message}</p>}
+            {errors.lifestyle && <p id="lifestyle-error" role="alert" className="text-red-500 text-sm">{errors.lifestyle.message}</p>}
             <p id="lifestyle-help" className="sr-only">Select whether your cat lives indoors or outdoors.</p>
           </div>
 
@@ -133,8 +133,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               {...register("insurance")} 
               className="w-5 h-5" 
               labelledBy="insurance-label"
-              describedBy={`${errors.insurance ? " insurance-error" : "insurance-help"}`}
-              aria-invalid={errors.insurance ? "true" : "false"}
+              describedBy="insurance-help"
               aria-label="Add Insurance (checkbox)"
             />
             <p id="insurance-help" className="sr-only">Add insurance to cover unexpected vet bills for accidents, injuries, and illnesses.</p>

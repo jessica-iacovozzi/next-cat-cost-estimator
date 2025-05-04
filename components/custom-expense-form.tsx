@@ -36,7 +36,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           aria-invalid={errors.name ? "true" : "false"}
         />
         <p id="expense-name-help" className="sr-only">Enter the name of the custom expense.</p>
-        {errors.name && <p id="expense-name-error" className="text-secondary text-sm flex items-center gap-1" role="alert"><OctagonAlert className="h-4 w-4" />{errors.name.message}</p>}
+        {errors.name && <p id="expense-name-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.name.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -53,7 +53,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           aria-invalid={errors.cost ? "true" : "false"}
         />
         <p id="expense-cost-help" className="sr-only">Enter the cost of the custom expense in dollars.</p>
-        {errors.cost && <p id="expense-cost-error" className="text-secondary text-sm flex items-center gap-1" role="alert"><OctagonAlert className="h-4 w-4" />{errors.cost.message}</p>}
+        {errors.cost && <p id="expense-cost-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.cost.message}</p>}
       </div>
 
       <Button type="submit" className="w-full rounded-lg">Add Expense</Button>
