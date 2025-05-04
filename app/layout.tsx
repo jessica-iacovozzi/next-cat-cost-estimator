@@ -7,6 +7,7 @@ import Link from "next/link";
 import "./globals.css";
 import Footer from "@/components/footer";
 import { ToastContextProvider } from "@/components/ui/toast-context";
+import { SkipLinks } from "@/components/skip-links";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground" suppressHydrationWarning>
+        <SkipLinks />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -48,7 +50,7 @@ export default function RootLayout({
                     {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                   </div>
                 </nav>
-                <div className="w-96 md:w-full max-w-6xl mx-auto flex-1 flex flex-col md:flex-row justify-center">
+                <div id="main-content" className="w-96 md:w-full max-w-6xl mx-auto flex-1 flex flex-col md:flex-row justify-center">
                   {children}
                 </div>
                 <Footer />
