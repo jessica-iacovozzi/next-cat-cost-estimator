@@ -61,10 +61,10 @@ const InfoTooltip = ({
             onPointerDownOutside={() => setOpen(false)}
             forceMount
           >
-            <div className="space-y-3" id={`${tooltipId}-content`}>
+            <div className="space-y-3" id={`${tooltipId}-content`} aria-labelledby={`${tooltipId}-content`}>
               {tooltipItems.map((item, index) => (
                 <div key={index} className={index > 0 ? "pt-2 border-t border-gray-700" : ""}>
-                  <p id={`${tooltipId}-item-${index}`}>{item.text}</p>
+                  <p id={`${tooltipId}-item-${index}`} aria-label={item.text}>{item.text}</p>
                   {item.link && (
                     <div className="mt-1">
                     <a 

@@ -167,7 +167,7 @@ export default function Estimate() {
                                   {item.name}
                                   {item.tooltip && item.tooltip.length > 0 && (
                                     <InfoTooltip content={item.tooltip}>
-                                      <InfoIcon size={16} className="text-muted-foreground cursor-help" />
+                                      <InfoIcon size={16} className="text-muted-foreground cursor-help" aria-hidden="true" role="presentation" />
                                     </InfoTooltip>
                                   )}
                               </p>

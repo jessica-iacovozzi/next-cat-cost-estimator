@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 const catCostSchema = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   lifeStage: z.enum(["Kitten", "Adult", "Senior"], {
     errorMap: () => ({ message: "Please select a life stage." }),
   }),
@@ -25,7 +25,7 @@ const catCostSchema = z.object({
   lifestyle: z.enum(["Indoor", "Outdoor"], {
     errorMap: () => ({ message: "Please select a lifestyle." }),
   }),
-  insurance: z.boolean(),
+  insurance: z.boolean().optional(),
 });
 
 export type CatCostFormValues = z.infer<typeof catCostSchema>;
@@ -72,14 +72,14 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
             <div className="flex items-center gap-1">
               <Label id="lifeStage-label" htmlFor="lifeStage" className="font-medium text-secondary">Life Stage</Label>
               <InfoTooltip content={{ text: "Kitten (0-1 year), Adult (1-7 years), Senior (8+ years). Different life stages have different care requirements and costs." }}>
-                <InfoIcon size={16} className="text-muted-foreground cursor-help" />
+                <InfoIcon size={16} className="text-muted-foreground cursor-help" aria-hidden="true" role="presentation" />
               </InfoTooltip>
             </div>
             <Controller
               name="lifeStage"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="lifeStage" labelledBy="lifeStage-label" describedBy={`${errors.lifeStage ? " lifeStage-error" : "lifeStage-help"}`} aria-invalid={Boolean(errors?.lifeStage)} aria-label="Life Stage" title="Life Stage">
+                <Select {...field} id="lifeStage" labelledBy="lifeStage-label" describedBy={`${errors.lifeStage ? " lifeStage-error" : "lifeStage-help"}`} aria-invalid={Boolean(errors?.lifeStage)} aria-label="Life Stage" title="Life Stage" aria-required>
                   <SelectItem value="Kitten" aria-label="Kitten">Kitten</SelectItem>
                   <SelectItem value="Adult" aria-label="Adult">Adult</SelectItem>
                   <SelectItem value="Senior" aria-label="Senior">Senior</SelectItem>
@@ -97,7 +97,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="sex"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="sex" labelledBy="sex-label" describedBy={`${errors.sex ? " sex-error" : "sex-help"}`} aria-invalid={Boolean(errors?.sex)} aria-label="Sex" title="Sex">
+                <Select {...field} id="sex" labelledBy="sex-label" describedBy={`${errors.sex ? " sex-error" : "sex-help"}`} aria-invalid={Boolean(errors?.sex)} aria-label="Sex" title="Sex" aria-required>
                   <SelectItem value="Male" aria-label="Male">Male</SelectItem>
                   <SelectItem value="Male Neutered" aria-label="Male (Neutered)">Male (Neutered)</SelectItem>
                   <SelectItem value="Female" aria-label="Female">Female</SelectItem>
@@ -116,7 +116,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="lifestyle"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="lifestyle" labelledBy="lifestyle-label" describedBy={`${errors.lifestyle ? " lifestyle-error" : "lifestyle-help"}`} aria-invalid={Boolean(errors?.lifestyle)} aria-label="Lifestyle" title="Lifestyle">
+                <Select {...field} id="lifestyle" labelledBy="lifestyle-label" describedBy={`${errors.lifestyle ? " lifestyle-error" : "lifestyle-help"}`} aria-invalid={Boolean(errors?.lifestyle)} aria-label="Lifestyle" title="Lifestyle" aria-required>
                   <SelectItem value="Indoor" aria-label="Indoor">Indoor</SelectItem>
                   <SelectItem value="Outdoor" aria-label="Outdoor">Outdoor</SelectItem>
                 </Select>
@@ -140,7 +140,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
             <VisuallyHidden id="insurance-help">Add insurance to cover unexpected vet bills for accidents, injuries, and illnesses.</VisuallyHidden>
             <Label id="insurance-label" htmlFor="insurance" className="font-medium text-secondary">Add Insurance?</Label>
             <InfoTooltip content={{ text: "Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!" }}>
-              <InfoIcon size={16} className="text-muted-foreground cursor-help" />
+              <InfoIcon size={16} className="text-muted-foreground cursor-help" aria-hidden="true" role="presentation" />
             </InfoTooltip>
           </div>
 
