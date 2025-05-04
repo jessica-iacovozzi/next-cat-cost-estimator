@@ -3,6 +3,7 @@ import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function ResetPassword(props: {
   searchParams: Promise<Message>;
@@ -25,7 +26,7 @@ export default async function ResetPassword(props: {
         aria-label="New Password"
         aria-required
       />
-      <p id="password-help" className="sr-only">Enter your new password to reset your password.</p>
+      <VisuallyHidden id="password-help">Enter your new password to reset your password.</VisuallyHidden>
       <Label id="confirm-password-label" htmlFor="confirmPassword">Confirm new password</Label>
       <Input
         type="password"
@@ -37,7 +38,7 @@ export default async function ResetPassword(props: {
         aria-label="Confirm New Password"
         aria-required
       />
-      <p id="confirm-password-help" className="sr-only">Confirm your new password to reset your password.</p>
+      <VisuallyHidden id="confirm-password-help">Confirm your new password to reset your password.</VisuallyHidden>
       <SubmitButton formAction={resetPasswordAction} aria-label="Reset Password">
         Reset password
       </SubmitButton>

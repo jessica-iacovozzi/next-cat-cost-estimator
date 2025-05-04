@@ -4,6 +4,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function Login(props: { 
   searchParams: Promise<{ [key: string]: string | string[] | undefined }> 
@@ -30,7 +31,7 @@ export default async function Login(props: {
       <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
         <Label id="email-label" htmlFor="email">Email</Label>
         <Input name="email" placeholder="you@example.com" required labelledBy="email-label" describedBy="email-help" aria-required />
-        <p id="email-help" className="sr-only">Enter your email to sign in.</p>
+        <VisuallyHidden id="email-help">Enter your email to sign in.</VisuallyHidden>
         <div className="flex justify-between items-center">
           <Label id="password-label" htmlFor="password">Password</Label>
           <Link
@@ -49,7 +50,7 @@ export default async function Login(props: {
           describedBy="password-help"
           aria-required
         />
-        <p id="password-help" className="sr-only">Enter your password to sign in.</p>
+        <VisuallyHidden id="password-help">Enter your password to sign in.</VisuallyHidden>
         {returnTo && (
           <Input type="hidden" name="returnTo" value={returnTo as string} />
         )}

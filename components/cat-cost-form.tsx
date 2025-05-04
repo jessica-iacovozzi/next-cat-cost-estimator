@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { FormSkeletonLoader } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 const catCostSchema = z.object({
   name: z.string(),
@@ -63,7 +64,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               )}
             />
             {errors.name && <p id="name-error" role="alert" className="text-red-500 text-sm">{errors.name.message}</p>}
-            <p id="name-help" className="sr-only">Enter the name of your cat.</p>
+            <VisuallyHidden id="name-help">Enter the name of your cat.</VisuallyHidden>
           </div>
 
           {/* Life Stage Selection */}
@@ -86,7 +87,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               )}
             />
             {errors.lifeStage && <p id="lifeStage-error" role="alert" className="text-red-500 text-sm">{errors.lifeStage.message}</p>}
-            <p id="lifeStage-help" className="sr-only">Select the life stage of your cat.</p>
+            <VisuallyHidden id="lifeStage-help">Select the life stage of your cat.</VisuallyHidden>
           </div>
 
           {/* Sex Selection */}
@@ -105,7 +106,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               )}
             />
             {errors.sex && <p id="sex-error" role="alert" className="text-red-500 text-sm">{errors.sex.message}</p>}
-            <p id="sex-help" className="sr-only">Select the sex of your cat.</p>
+            <VisuallyHidden id="sex-help">Select the sex of your cat.</VisuallyHidden>
           </div>
 
           {/* Lifestyle Selection */}
@@ -122,7 +123,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               )}
             />
             {errors.lifestyle && <p id="lifestyle-error" role="alert" className="text-red-500 text-sm">{errors.lifestyle.message}</p>}
-            <p id="lifestyle-help" className="sr-only">Select whether your cat lives indoors or outdoors.</p>
+            <VisuallyHidden id="lifestyle-help">Select whether your cat lives indoors or outdoors.</VisuallyHidden>
           </div>
 
           {/* Insurance Selection */}
@@ -136,7 +137,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               describedBy="insurance-help"
               aria-label="Add Insurance (checkbox)"
             />
-            <p id="insurance-help" className="sr-only">Add insurance to cover unexpected vet bills for accidents, injuries, and illnesses.</p>
+            <VisuallyHidden id="insurance-help">Add insurance to cover unexpected vet bills for accidents, injuries, and illnesses.</VisuallyHidden>
             <Label id="insurance-label" htmlFor="insurance" className="font-medium text-secondary">Add Insurance?</Label>
             <InfoTooltip content={{ text: "Insurance covers unexpected vet bills for accidents, injuries, and illnesses. The AMVQ believes that pet insurance is well worth the cost!" }}>
               <InfoIcon size={16} className="text-muted-foreground cursor-help" />

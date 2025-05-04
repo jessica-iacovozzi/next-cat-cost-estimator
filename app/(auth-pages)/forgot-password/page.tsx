@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
@@ -25,7 +26,7 @@ export default async function ForgotPassword(props: {
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
           <Label id="email-label" htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required labelledBy="email-label" describedBy="email-help" aria-required />
-          <p id="email-help" className="sr-only">We will send you a link to reset your password.</p>
+          <VisuallyHidden id="email-help">We will send you a link to reset your password.</VisuallyHidden>
           <SubmitButton formAction={forgotPasswordAction}>
             Reset Password
           </SubmitButton>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OctagonAlert } from "lucide-react";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 const customExpenseSchema = z.object({
   name: z.string(),
@@ -36,7 +37,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           aria-invalid={Boolean(errors?.name)}
           aria-required
         />
-        <p id="expense-name-help" className="sr-only">Enter the name of the custom expense.</p>
+        <VisuallyHidden id="expense-name-help">Enter the name of the custom expense.</VisuallyHidden>
         {errors.name && <p id="expense-name-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.name.message}</p>}
       </div>
 
@@ -54,7 +55,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           aria-invalid={Boolean(errors?.cost)}
           aria-required
         />
-        <p id="expense-cost-help" className="sr-only">Enter the cost of the custom expense in dollars.</p>
+        <VisuallyHidden id="expense-cost-help">Enter the cost of the custom expense in dollars.</VisuallyHidden>
         {errors.cost && <p id="expense-cost-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.cost.message}</p>}
       </div>
 
