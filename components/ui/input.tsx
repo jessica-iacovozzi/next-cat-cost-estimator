@@ -3,10 +3,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  describedBy?: string;
+  labelledBy?: string;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, describedBy, labelledBy, ...props }, ref) => {
     return (
       <input
         type={type}
@@ -15,6 +18,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className,
         )}
         ref={ref}
+        aria-describedby={describedBy}
+        aria-labelledby={labelledBy}
         {...props}
       />
     );
