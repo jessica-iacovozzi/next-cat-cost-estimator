@@ -59,7 +59,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="name"
               control={control}
               render={({ field }) => (
-                <Input {...field} id="name" labelledBy="name-label" describedBy={`${errors.name ? " name-error" : "name-help"}`} aria-invalid={errors.name ? "true" : "false"} aria-label="Name of Cat" title="Name" placeholder="Bella" className="placeholder:text-muted-foreground" />
+                <Input {...field} id="name" labelledBy="name-label" describedBy={`${errors.name ? " name-error" : "name-help"}`} aria-invalid={Boolean(errors?.name)} aria-label="Name of Cat" title="Name" placeholder="Bella" className="placeholder:text-muted-foreground" />
               )}
             />
             {errors.name && <p id="name-error" role="alert" className="text-red-500 text-sm">{errors.name.message}</p>}
@@ -78,7 +78,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="lifeStage"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="lifeStage" labelledBy="lifeStage-label" describedBy={`${errors.lifeStage ? " lifeStage-error" : "lifeStage-help"}`} aria-invalid={errors.lifeStage ? "true" : "false"} aria-label="Life Stage" title="Life Stage">
+                <Select {...field} id="lifeStage" labelledBy="lifeStage-label" describedBy={`${errors.lifeStage ? " lifeStage-error" : "lifeStage-help"}`} aria-invalid={Boolean(errors?.lifeStage)} aria-label="Life Stage" title="Life Stage">
                   <SelectItem value="Kitten" aria-label="Kitten">Kitten</SelectItem>
                   <SelectItem value="Adult" aria-label="Adult">Adult</SelectItem>
                   <SelectItem value="Senior" aria-label="Senior">Senior</SelectItem>
@@ -96,7 +96,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="sex"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="sex" labelledBy="sex-label" describedBy={`${errors.sex ? " sex-error" : "sex-help"}`} aria-invalid={errors.sex ? "true" : "false"} aria-label="Sex" title="Sex">
+                <Select {...field} id="sex" labelledBy="sex-label" describedBy={`${errors.sex ? " sex-error" : "sex-help"}`} aria-invalid={Boolean(errors?.sex)} aria-label="Sex" title="Sex">
                   <SelectItem value="Male" aria-label="Male">Male</SelectItem>
                   <SelectItem value="Male Neutered" aria-label="Male (Neutered)">Male (Neutered)</SelectItem>
                   <SelectItem value="Female" aria-label="Female">Female</SelectItem>
@@ -115,7 +115,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
               name="lifestyle"
               control={control}
               render={({ field }) => (
-                <Select {...field} id="lifestyle" labelledBy="lifestyle-label" describedBy={`${errors.lifestyle ? " lifestyle-error" : "lifestyle-help"}`} aria-invalid={errors.lifestyle ? "true" : "false"} aria-label="Lifestyle" title="Lifestyle">
+                <Select {...field} id="lifestyle" labelledBy="lifestyle-label" describedBy={`${errors.lifestyle ? " lifestyle-error" : "lifestyle-help"}`} aria-invalid={Boolean(errors?.lifestyle)} aria-label="Lifestyle" title="Lifestyle">
                   <SelectItem value="Indoor" aria-label="Indoor">Indoor</SelectItem>
                   <SelectItem value="Outdoor" aria-label="Outdoor">Outdoor</SelectItem>
                 </Select>

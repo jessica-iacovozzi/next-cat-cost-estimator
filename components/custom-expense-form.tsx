@@ -33,7 +33,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           className="w-full p-2 border border-white rounded-lg bg-transparent placeholder:text-white" 
           labelledBy="expense-name-label"
           describedBy={errors.name ? "expense-name-error" : "expense-name-help"}
-          aria-invalid={errors.name ? "true" : "false"}
+          aria-invalid={Boolean(errors?.name)}
         />
         <p id="expense-name-help" className="sr-only">Enter the name of the custom expense.</p>
         {errors.name && <p id="expense-name-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.name.message}</p>}
@@ -50,7 +50,7 @@ export default function CustomExpenseForm({ onSubmit }: { onSubmit: (data: Custo
           className="w-full p-2 border border-white rounded-lg bg-transparent placeholder:text-white" 
           labelledBy="expense-cost-label"
           describedBy={errors.cost ? "expense-cost-error" : "expense-cost-help"}
-          aria-invalid={errors.cost ? "true" : "false"}
+          aria-invalid={Boolean(errors?.cost)}
         />
         <p id="expense-cost-help" className="sr-only">Enter the cost of the custom expense in dollars.</p>
         {errors.cost && <p id="expense-cost-error" role="alert" className="text-secondary text-sm flex items-center gap-1"><OctagonAlert className="h-4 w-4" />{errors.cost.message}</p>}
