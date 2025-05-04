@@ -32,10 +32,9 @@ const InfoTooltip = ({
           <span 
             className="inline-flex items-center justify-center cursor-help"
             tabIndex={0}
-            aria-describedby={tooltipId}
+            aria-describedby={`${tooltipId}-content`}
             aria-expanded={open}
             aria-haspopup="dialog"
-            role="tooltip"
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -61,10 +60,10 @@ const InfoTooltip = ({
             onPointerDownOutside={() => setOpen(false)}
             forceMount
           >
-            <div className="space-y-3">
+            <div className="space-y-3" id={`${tooltipId}-content`}>
               {tooltipItems.map((item, index) => (
                 <div key={index} className={index > 0 ? "pt-2 border-t border-gray-700" : ""}>
-                  <p aria-label={item.text}>{item.text}</p>
+                  <p id={`${tooltipId}-item-${index}`}>{item.text}</p>
                   {item.link && (
                     <div className="mt-1">
                     <a 
@@ -72,6 +71,7 @@ const InfoTooltip = ({
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-blue-500 hover:text-blue-400 underline text-sm"
+                      id={`${tooltipId}-link-${index}`}
                       aria-label={`Learn more (opens in a new tab)`}
                     >
                       Learn more

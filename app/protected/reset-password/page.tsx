@@ -23,6 +23,7 @@ export default async function ResetPassword(props: {
         labelledBy="password-label"
         describedBy="password-help"
         aria-label="New Password"
+        aria-required
       />
       <p id="password-help" className="sr-only">Enter your new password to reset your password.</p>
       <Label id="confirm-password-label" htmlFor="confirmPassword">Confirm new password</Label>
@@ -34,6 +35,7 @@ export default async function ResetPassword(props: {
         labelledBy="confirm-password-label"
         describedBy="confirm-password-help"
         aria-label="Confirm New Password"
+        aria-required
       />
       <p id="confirm-password-help" className="sr-only">Confirm your new password to reset your password.</p>
       <SubmitButton formAction={resetPasswordAction} aria-label="Reset Password">

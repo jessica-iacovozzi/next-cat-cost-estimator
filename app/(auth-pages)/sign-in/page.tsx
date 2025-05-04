@@ -29,7 +29,7 @@ export default async function Login(props: {
       </p>
       <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
         <Label id="email-label" htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required labelledBy="email-label" describedBy="email-help" />
+        <Input name="email" placeholder="you@example.com" required labelledBy="email-label" describedBy="email-help" aria-required />
         <p id="email-help" className="sr-only">Enter your email to sign in.</p>
         <div className="flex justify-between items-center">
           <Label id="password-label" htmlFor="password">Password</Label>
@@ -47,6 +47,7 @@ export default async function Login(props: {
           required
           labelledBy="password-label"
           describedBy="password-help"
+          aria-required
         />
         <p id="password-help" className="sr-only">Enter your password to sign in.</p>
         {returnTo && (
