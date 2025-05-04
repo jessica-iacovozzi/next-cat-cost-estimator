@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { Tooltip } from "radix-ui";
+import { useState, useId } from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 export interface TooltipItem {
   text: string;
@@ -17,44 +17,76 @@ const InfoTooltip = ({
 }) => {
   // Ensure content is always an array for consistent rendering
   const tooltipItems = Array.isArray(content) ? content : [content];
+  const [open, setOpen] = useState(false);
+  
+  // Generate a unique ID for the tooltip
+  const tooltipId = useId();
 
-	return (
-		<Tooltip.Provider>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild>
-					<span className="inline-flex items-center justify-center">
-						{children}
-					</span>
-				</Tooltip.Trigger>
-				<Tooltip.Portal>
-					<Tooltip.Content
-						className="select-none w-96 rounded border bg-secondary-foreground px-[15px] py-2.5 text-[15px] leading-none text-secondary"
-					>
-						<div className="space-y-3">
-							{tooltipItems.map((item, index) => (
-								<div key={index} className={index > 0 ? "pt-2 border-t border-gray-700" : ""}>
-								<p>{item.text}</p>
-								{item.link && (
-									<div className="mt-1">
-									<a 
-										href={item.link} 
-										target="_blank" 
-										rel="noopener noreferrer"
-										className="text-blue-500 hover:text-blue-400 underline text-sm"
-									>
-										Learn more
-									</a>
-									</div>
-								)}
-								</div>
-							))}
-							</div>
-						<Tooltip.Arrow className="fill-white" />
-					</Tooltip.Content>
-				</Tooltip.Portal>
-			</Tooltip.Root>
-		</Tooltip.Provider>
-	);
+  return (
+    <TooltipPrimitive.Provider delayDuration={300}>
+      <TooltipPrimitive.Root
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <TooltipPrimitive.Trigger asChild>
+          <span 
+            className="inline-flex items-center justify-center cursor-help"
+            tabIndex={0}
+            aria-describedby={tooltipId}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            role="tooltip"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setOpen(!open);
+              }
+              if (e.key === 'Escape') {
+                setOpen(false);
+              }
+            }}
+          >
+            {children}
+          </span>
+        </TooltipPrimitive.Trigger>
+        
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            id={tooltipId}
+            side="top"
+            align="center"
+            sideOffset={5}
+            className="select-none w-96 rounded border bg-secondary-foreground px-[15px] py-2.5 text-[15px] leading-none text-secondary z-50 shadow-md"
+            onEscapeKeyDown={() => setOpen(false)}
+            onPointerDownOutside={() => setOpen(false)}
+            forceMount
+          >
+            <div className="space-y-3">
+              {tooltipItems.map((item, index) => (
+                <div key={index} className={index > 0 ? "pt-2 border-t border-gray-700" : ""}>
+                  <p aria-label={item.text}>{item.text}</p>
+                  {item.link && (
+                    <div className="mt-1">
+                    <a 
+                      href={item.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-400 underline text-sm"
+                      aria-label={`Learn more (opens in a new tab)`}
+                    >
+                      Learn more
+                    </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <TooltipPrimitive.Arrow className="fill-white" />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
+  );
 };
 
 export default InfoTooltip;
