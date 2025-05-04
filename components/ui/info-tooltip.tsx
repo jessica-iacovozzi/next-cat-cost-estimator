@@ -35,6 +35,7 @@ const InfoTooltip = ({
             aria-describedby={`${tooltipId}-content`}
             aria-expanded={open}
             aria-haspopup="dialog"
+            role="tooltip"
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
