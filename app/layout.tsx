@@ -15,8 +15,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Quebec Cat Cost Estimator",
-  description: "The first cat cost estimator in Quebec",
+  title: "Whisker Budget",
+  description: "The first customizable cat cost estimator in Quebec",
 };
 
 const geistSans = Geist({
@@ -45,7 +45,7 @@ export default function RootLayout({
                 <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                   <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                     <div className="flex gap-5 items-center font-semibold">
-                      <Link href={"/"}>Cat Cost Estimator</Link>
+                      <Link href={"/"}>Whisker Budget</Link>
                     </div>
                     {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                   </div>
