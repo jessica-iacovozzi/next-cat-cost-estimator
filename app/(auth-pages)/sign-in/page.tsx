@@ -54,7 +54,7 @@ export default async function Login(props: {
         {returnTo && (
           <Input type="hidden" name="returnTo" value={returnTo as string} />
         )}
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+        <SubmitButton pendingText="Signing In..." formAction={signInAction} aria-label="Sign In" className="bg-destructive">
           Sign in
         </SubmitButton>
         {message && <FormMessage message={message} />}

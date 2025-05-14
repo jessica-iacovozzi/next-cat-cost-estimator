@@ -24,7 +24,7 @@ export default async function Signup(props: {
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
           Already have an account?{" "}
-          <Link className="text-primary font-medium underline" href="/sign-in">
+          <Link className="text-foreground font-medium underline" href="/sign-in">
             Sign in
           </Link>
         </p>
@@ -44,7 +44,7 @@ export default async function Signup(props: {
             aria-required
           />
           <VisuallyHidden id="password-help">Enter your password to sign up.</VisuallyHidden>
-          <SubmitButton formAction={signUpAction} pendingText="Signing up...">
+          <SubmitButton formAction={signUpAction} pendingText="Signing up..." className="bg-destructive" aria-label="Sign Up">
             Sign up
           </SubmitButton>
           <FormMessage message={searchParams} />
