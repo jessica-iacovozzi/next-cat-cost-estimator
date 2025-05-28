@@ -55,7 +55,7 @@ export default function CatCostForm({ onSubmit }: { onSubmit: (data: CatCostForm
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Name Selection */}
           <div className="space-y-2">
-            <Label id="name-label" htmlFor="name" className="font-medium text-secondary">Name of Cat</Label>
+            <Label id="name-label" htmlFor="name" className="font-medium text-secondary">Name of Cat (optional)</Label>
             <Controller
               name="name"
               control={control}

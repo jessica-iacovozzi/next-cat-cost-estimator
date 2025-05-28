@@ -1,104 +1,146 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# 🐱 Whisker Budget
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+## Project Description
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+Whisker Budget is a web application designed to help prospective and current cat owners estimate and plan for the annual costs of cat care. This tool breaks down expenses into categories like food, healthcare, toys, and other essentials, providing users with a realistic budget for their feline companion.
+
+Built with modern web technologies, the application offers a seamless user experience, complete with user accounts to save and revisit estimates, accessibility features, and detailed tooltips explaining each expense category.
+
+## Table of Contents
+
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+
+## Technologies Used
+
+This project is built with the following technologies:
+
+- **Framework**: [Next.js](https://nextjs.org/) (latest version)
+- **UI Library**: [React](https://react.dev/) 19.0.0
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) 3.4.17
+- **Database**: [Supabase](https://supabase.com/) (latest version)
+- **Form Management**: [React Hook Form](https://react-hook-form.com/) 7.54.2
+- **Form Validation**: [Zod](https://zod.dev/) 3.24.2
+- **UI Components**: [Radix UI](https://www.radix-ui.com/) (various components)
+- **TypeScript**: 5.7.2
+- **Icons**: [Lucide React](https://lucide.dev/) 0.468.0
+- **Theming**: [Next Themes](https://github.com/pacocoursey/next-themes) 0.4.3
+- **API Fetching**: [TanStack Query](https://tanstack.com/query) (react-query)
+
+**Utility Libraries**:
+- [clsx](https://github.com/lukeed/clsx) 2.1.1
+- [class-variance-authority](https://cva.style/docs) 0.7.0
+- [tailwind-merge](https://github.com/dcastil/tailwind-merge) 2.6.0
+
+**Development Tools**:
+- [Prettier](https://prettier.io/) 3.3.3
+- [PostCSS](https://postcss.org/) 8.4.49
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- **Cost Estimation**: Calculate annual costs for cat ownership based on various factors
+- **Expense Breakdown**: View detailed breakdowns of costs by category
+- **User Accounts**: Save and retrieve cost estimates with Supabase authentication
+- **Responsive Design**: Fully responsive interface that works on mobile, tablet, and desktop
+- **Accessibility**: Follows WCAG guidelines
+- **Dark/Light Mode**: Theme toggle for user preference
+- **Tooltips**: Detailed informational tooltips explaining each expense category
+- **Form Validation**: Client-side validation using Zod and React Hook Form
 
-## Demo
+## Requirements
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- Node.js 18.x or higher
+- npm, yarn, or pnpm
+- A Supabase account for database and authentication
 
-## Deploy to Vercel
+## Installation
 
-Vercel deployment will guide you through creating a Supabase account and project.
+1. Clone the repository:
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+```bash
+git clone https://github.com/jessica-iacovozzi/next-cat-cost-estimator.git
+cd next-cat-cost-estimator
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+2. Install dependencies:
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local`
+   - Fill in your Supabase credentials
 
-## Clone and run locally
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+4. Start the development server:
 
-2. Create a Next.js app using the Supabase Starter template npx command
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+## Usage
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+1. **Creating an estimate**:
+   - Fill out the cat information form
+   - Submit to see your total annual estimate
 
-3. Use `cd` to change into the app's directory
+2. **Saving estimates** (requires account):
+   - Create an account or log in
+   - Save your estimate for future reference
+   - View and edit saved estimates from your profile
 
-   ```bash
-   cd with-supabase-app
-   ```
+3. **Understanding costs**:
+   - Hover over the information icons to see detailed explanations
 
-4. Rename `.env.example` to `.env.local` and update the following:
+## Project Structure
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+```
+├── app/              # Next.js App Router pages and layouts
+├── components/       # Reusable React components
+├── lib/             # Utility functions and shared code
+├── hooks/           # Custom React hooks
+├── supabase/        # Supabase client and configuration
+├── types/           # TypeScript type definitions
+└── utils/           # Utility functions and shared code
+```
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
+## Contributing
 
-5. You can now run the Next.js local development server:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-   ```bash
-   npm run dev
-   ```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+## License
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+## Support
 
-## Feedback and issues
+If you encounter any issues or have questions about this project, please:
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+- Open an issue in the GitHub repository
+- Contact me at [iacovozzi.jessica@gmail.com]
+- Visit the project website at [https://www.whiskerbudget.ca/]
 
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
